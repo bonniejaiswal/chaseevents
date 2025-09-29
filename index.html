@@ -72,8 +72,8 @@
     button{appearance:none;border:none;border-radius:12px;padding:12px 16px;font-weight:750;cursor:pointer;font-size:16px}
     .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
     .ghost{background:#fff;color:var(--ink);border:1px solid var(--border)}
-    .danger{background:var(--danger);color:white}
-    .success{background:var(--success);color:white}
+    .danger{background:#ef4444;color:white}
+    .success{background:#10b981;color:white}
 
     .footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
 
@@ -85,7 +85,7 @@
     .modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--border)}
     pre{white-space:pre-wrap;background:#f9f6ff;border:1px solid var(--border);border-radius:12px;padding:12px}
 
-    .required::after{content:" *";color:var(--danger);font-weight:700}
+    .required::after{content:" *";color:#ef4444;font-weight:700}
 
     /* Better mobile spacing */
     @media(max-width:399px){
@@ -133,6 +133,13 @@
               <input id="company" name="company" type="text" />
             </div>
           </div>
+          <div class="row">
+            <div>
+              <label for="costCenter">Cost Center</label>
+              <input id="costCenter" name="costCenter" type="text" placeholder="Billing code or department" />
+            </div>
+            <div></div>
+          </div>
         </fieldset>
 
         <!-- Event Details -->
@@ -167,8 +174,8 @@
               <label for="serviceStyle" class="required">Service Style</label>
               <select id="serviceStyle" name="serviceStyle" required>
                 <option value="" disabled selected>Select…</option>
-                <option>Disposable Tableware</option>
-                <option>China / Reusable</option>
+                <option>Disposable</option>
+                <option>China</option>
               </select>
             </div>
           </div>
@@ -274,7 +281,7 @@
     </div>
     <div class="modal-actions">
       <button class="ghost" onclick="copySummary()">Copy</button>
-      <button class="success" id="sendBtn" title="Send via backend (Formspree/EmailJS) if configured; otherwise opens your email app">Send</button>
+      <button class="success" id="sendBtn" title="Opens your email app with formatted summary">Send</button>
       <button class="primary" onclick="window.print()">Print / Save PDF</button>
     </div>
   </dialog>
@@ -282,19 +289,6 @@
   <script>
     const $ = sel => document.querySelector(sel);
     const $$ = sel => [...document.querySelectorAll(sel)];
-
-    // ====== CONFIG: choose one to enable direct email without opening a client ======
-    // Option A) Formspree (no-code backend). Create a Formspree form and paste the endpoint URL below.
-    const FORMSPREE_URL = ""; // e.g. "https://formspree.io/f/abcdeqrs"
-
-    // Option B) EmailJS (client-side email). Include their SDK and your keys; see: https://www.emailjs.com/docs/sdk/installation/
-    // To enable, add <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script> in your HTML
-    // and set the following three values:
-    const EMAILJS_PUBLIC_KEY = "";      // e.g. "your_public_key"
-    const EMAILJS_SERVICE_ID = "";      // e.g. "service_xxx"
-    const EMAILJS_TEMPLATE_ID = "";     // e.g. "template_xxx"
-
-    // ================== DO NOT EDIT BELOW UNLESS NEEDED ==================
 
     // Set min date to today and current year
     const today = new Date();
@@ -341,6 +335,7 @@
         email: data.get('email'),
         phone: data.get('phone'),
         company: data.get('company')||'',
+        costCenter: data.get('costCenter')||'',
         eventDate: data.get('eventDate'),
         location: data.get('location'),
         startTime: data.get('startTime'),
@@ -406,6 +401,8 @@
 `  Phone           : ${o.phone}
 `+
 `  Company         : ${o.company || '(n/a)'}
+`+
+`  Cost Center     : ${o.costCenter || '(n/a)'}
 
 `+
 `EVENT
@@ -473,6 +470,7 @@
         `Email: ${o.email}`,
         `Phone: ${o.phone}`,
         `Company: ${o.company || '(n/a)'}`,
+        `Cost Center: ${o.costCenter || '(n/a)'}`,
         '',
         '[EVENT]',
         `Date: ${o.eventDate}`,
@@ -528,44 +526,18 @@
       return `mailto:${to}?subject=${subject}&body=${b}`;
     }
 
-    async function tryFormspree(payload){
-      if(!FORMSPREE_URL) return false;
-      try{
-        const res = await fetch(FORMSPREE_URL,{
-          method:'POST',
-          headers:{'Accept':'application/json','Content-Type':'application/json'},
-          body: JSON.stringify(payload)
-        });
-        if(res.ok){ alert('Submitted! We\'ll be in touch shortly.'); return true; }
-        else{ const t = await res.text(); alert('Submit error: '+t); return false; }
-      }catch(err){ console.error(err); alert('Network error submitting form.'); return false; }
-    }
-
-    async function tryEmailJS(payload){
-      if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return false;
-      try{
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        const r = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, payload);
-        if(r && r.status === 200){ alert('Submitted! Check your email.'); return true; }
-        return false;
-      }catch(e){ console.error(e); alert('EmailJS error.'); return false; }
-    }
-
-    form.addEventListener('submit', async (e)=>{
+    form.addEventListener('submit', (e)=>{
       e.preventDefault();
       if(!requiredFilled() || !validateTimes()) return;
       const obj = serialize();
       const pretty = prettySummary(obj);
       openModal(pretty);
 
-      const payload = { ...obj, pretty_summary: pretty, line_summary: lineSummary(obj) };
+      const payload = { ...obj };
       const sendBtn = $('#sendBtn');
-      sendBtn.onclick = async ()=>{
-        // Try direct send via Formspree or EmailJS. If not configured, fall back to mailto
-        if(await tryFormspree(payload)) return;
-        if(await tryEmailJS(payload)) return;
-        // Fallback to email client with line-by-line formatted body
-        window.location.href = mailtoLink(payload.line_summary);
+      sendBtn.onclick = ()=>{
+        const body = lineSummary(payload);
+        window.location.href = mailtoLink(body);
       };
     });
 
