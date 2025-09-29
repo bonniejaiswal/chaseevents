@@ -7,17 +7,26 @@
   <meta name="description" content="Submit a catering request with event details, menu preferences, and budget." />
   <style>
     :root{
-      --bg:#0b0f14; --card:#111826; --muted:#8ea0b5; --text:#e8eef6; --accent:#66d9a3; --accent2:#7aa2f7; --danger:#ff6b6b;
-      --border:#223047;
+      /* Brandable palette */
+      --bg:#fef1ff; /* requested soft backdrop */
+      --card:#ffffff;
+      --muted:#5b6674;
+      --text:#0f1222;
+      --accent:#6f5cf1;
+      --accent2:#29b385;
+      --danger:#ff5a5f;
+      --border:#e5e8ef;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(120deg,#0b0f14,#0f1520);}    
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg)}
     .container{max-width:980px;margin:40px auto;padding:0 16px}
-    .card{background:linear-gradient(180deg,#0f1623 0%,#0e1624 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}
-    header.hero{padding:28px 24px;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(20,20,20,.06);overflow:hidden}
+
+    header.hero{padding:24px;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
     .brand{display:flex;gap:14px;align-items:center}
-    .logo{width:42px;height:42px;border-radius:10px;background:radial-gradient(120px 60px at 30% 30%,var(--accent),transparent 60%),radial-gradient(120px 60px at 70% 70%,var(--accent2),transparent 60%);border:1px solid var(--border)}
+    .logo{width:42px;height:42px;border-radius:10px;background:radial-gradient(120px 60px at 30% 30%,var(--accent),transparent 60%),radial-gradient(120px 60px at 70% 70%,var(--accent2),transparent 60%);border:1px solid rgba(0,0,0,.06)}
     h1{color:var(--text);margin:0;font-size:1.4rem;letter-spacing:.3px}
     .sub{color:var(--muted);font-size:.95rem}
 
@@ -38,36 +47,38 @@
     .hint{color:var(--muted);font-size:.85rem;margin-top:6px}
 
     input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="date"],input[type="time"],textarea,select{
-      width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1220;color:var(--text);outline:none;transition:box-shadow .15s,border-color .15s
+      width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--border);background:#fff;color:var(--text);outline:none;transition:box-shadow .15s,border-color .15s
     }
     textarea{min-height:110px;resize:vertical}
-    input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px #1a2b44;border-color:#35527a}
+    input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px rgba(111,92,241,.15);border-color:#cfd6ff}
 
     .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .chips{display:flex;flex-wrap:wrap;gap:10px}
-    .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:999px;background:#0c1422;color:var(--text);cursor:pointer;user-select:none}
+
+    /* Compact, consistent chips for radios/checkboxes */
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--text);cursor:pointer;user-select:none;line-height:1}
     .chip input{accent-color:var(--accent)}
 
     .totals{display:flex;gap:16px;flex-wrap:wrap}
-    .summary{flex:1;min-width:260px;border:1px dashed var(--border);border-radius:12px;padding:12px;color:var(--text)}
+    .summary{flex:1;min-width:260px;border:1px dashed var(--border);border-radius:12px;padding:12px;color:var(--text);background:#fff}
     .summary h3{margin:.2rem 0 .6rem;font-size:1rem;color:var(--muted)}
 
     .actions{display:flex;gap:12px;flex-wrap:wrap}
     button{appearance:none;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
-    .primary{background:linear-gradient(90deg,var(--accent2),var(--accent));color:#081019}
+    .primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:white}
     .ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
     .danger{background:var(--danger);color:white}
-    .success{background:#20c997;color:#081019}
+    .success{background:#20c997;color:white}
 
     .footer{padding:18px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
 
     /* Modal */
-    dialog{border:none;border-radius:16px;background:#0f1623;color:var(--text);width:min(720px,92vw);box-shadow:0 10px 40px rgba(0,0,0,.45)}
-    dialog::backdrop{background:rgba(0,0,0,.5)}
+    dialog{border:none;border-radius:16px;background:#fff;color:var(--text);width:min(720px,92vw);box-shadow:0 10px 40px rgba(0,0,0,.15)}
+    dialog::backdrop{background:rgba(0,0,0,.35)}
     .modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:14px 16px}
     .modal-body{padding:16px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--border)}
-    pre{white-space:pre-wrap;background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:12px}
+    pre{white-space:pre-wrap;background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:12px}
 
     .required::after{content:" *";color:var(--danger);font-weight:700}
   </style>
@@ -83,7 +94,7 @@
             <div class="sub">Tell us the basics. We’ll confirm with a custom proposal.</div>
           </div>
         </div>
-        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent2);text-decoration:none">(000) 000‑0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent2);text-decoration:none">orders@yourcatering.com</a></div>
+        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent);text-decoration:none">(000) 000‑0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent);text-decoration:none">orders@yourcatering.com</a></div>
       </header>
 
       <form id="cateringForm" novalidate>
@@ -109,6 +120,13 @@
               <label for="company">Company / Organization</label>
               <input id="company" name="company" type="text" />
             </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="costCenter">Cost Center</label>
+              <input id="costCenter" name="costCenter" type="text" placeholder="Optional" />
+            </div>
+            <div></div>
           </div>
         </fieldset>
 
@@ -144,8 +162,8 @@
               <label for="serviceStyle" class="required">Service Style</label>
               <select id="serviceStyle" name="serviceStyle" required>
                 <option value="" disabled selected>Select…</option>
-                <option>Disposable Tableware</option>
-                <option>China / Reusable</option>
+                <option>Disposable</option>
+                <option>China</option>
               </select>
             </div>
           </div>
@@ -200,10 +218,7 @@
             <div>
               <label class="chip"><input type="checkbox" id="rush" name="rush"> Last‑Minute Event (within 48 hrs) — <strong>$200 rush fee</strong></label>
             </div>
-            <div>
-              <label for="promo">Promo / Internal Code</label>
-              <input id="promo" name="promo" type="text" />
-            </div>
+            <div></div>
           </div>
           <div class="totals">
             <div class="summary">
@@ -305,6 +320,7 @@
         email: data.get('email'),
         phone: data.get('phone'),
         company: data.get('company')||'',
+        costCenter: data.get('costCenter')||'',
         eventDate: data.get('eventDate'),
         location: data.get('location'),
         startTime: data.get('startTime'),
@@ -318,7 +334,6 @@
         budgetPer: data.get('budgetPer'),
         totalBudget: data.get('totalBudget')||'',
         rush: !!data.get('rush'),
-        promo: data.get('promo')||'',
         notes: data.get('notes')||''
       };
     }
@@ -354,7 +369,8 @@
       const base = (parseInt(obj.guests||0,10) * parseFloat(obj.budgetPer||0))||0;
       const rushFee = obj.rush ? 200 : 0;
       const estTotal = (obj.totalBudget? parseFloat(obj.totalBudget): base) + rushFee;
-      return `CATERING REQUEST\n\nCONTACT\nName: ${obj.name}\nEmail: ${obj.email}\nPhone: ${obj.phone}\nCompany: ${obj.company}\n\nEVENT\nDate: ${obj.eventDate}\nLocation: ${obj.location}\nStart: ${obj.startTime}\nEnd: ${obj.endTime}\nGuests: ${obj.guests}\nService Style: ${obj.serviceStyle}\n\nMEALS\nTypes: ${obj.mealTypes.join(', ')}\nMenu Preference: ${obj.menuPref}\nMenu Notes: ${obj.menuNotes}\nCatering Type: ${obj.cateringType}\n\nBUDGET\nPer Person: $${Number(obj.budgetPer||0).toFixed(2)}\nTotal Budget (client): ${obj.totalBudget? `$${Number(obj.totalBudget).toFixed(2)}`:'(not specified)'}\nRush (within 48h): ${obj.rush? 'Yes (+$200)': 'No'}\n\nESTIMATE\nGuests × Per‑person: $${base.toFixed(2)}\nRush Fee: $${rushFee.toFixed(2)}\nEstimated Total: $${estTotal.toFixed(2)}\n\nNOTES\n${obj.notes || '(none)'}\n\n— Submitted via website`; }
+      return `CATERING REQUEST\n\nCONTACT\nName: ${obj.name}\nEmail: ${obj.email}\nPhone: ${obj.phone}\nCompany: ${obj.company}\nCost Center: ${obj.costCenter}\n\nEVENT\nDate: ${obj.eventDate}\nLocation: ${obj.location}\nStart: ${obj.startTime}\nEnd: ${obj.endTime}\nGuests: ${obj.guests}\nService Style: ${obj.serviceStyle}\n\nMEALS\nTypes: ${obj.mealTypes.join(', ')}\nMenu Preference: ${obj.menuPref}\nMenu Notes: ${obj.menuNotes}\nCatering Type: ${obj.cateringType}\n\nBUDGET\nPer Person: $${Number(obj.budgetPer||0).toFixed(2)}\nTotal Budget (client): ${obj.totalBudget? `$${Number(obj.totalBudget).toFixed(2)}`:'(not specified)'}\nRush (within 48h): ${obj.rush? 'Yes (+$200)': 'No'}\n\nESTIMATE\nGuests × Per‑person: $${base.toFixed(2)}\nRush Fee: $${rushFee.toFixed(2)}\nEstimated Total: $${estTotal.toFixed(2)}\n\nNOTES\n${obj.notes || '(none)'}\n\n— Submitted via website`;
+    }
 
     function openModal(summary){
       $('#previewText').textContent = summary;
@@ -371,7 +387,7 @@
     }
 
     function buildMailto(summary){
-      const to = 'orders@yourcatering.com'; // TODO: replace with your inbox
+      const to = 'orders@yourcatering.com'; // replace with your inbox
       const subject = encodeURIComponent('New Catering Request');
       const body = encodeURIComponent(summary);
       return `mailto:${to}?subject=${subject}&body=${body}`;
