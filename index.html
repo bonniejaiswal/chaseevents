@@ -4,77 +4,79 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Catering Request</title>
+  <meta name="description" content="Submit a catering request with event details, menu preferences, and budget." />
   <style>
     :root{
-      --bg:#FEF1FF;
-      --card:#ffffff;
-      --ink:#1a2433;
-      --muted:#5b6471;
-      --border:#e7d9f0;
-      --accent:#7b61ff;
-      --accent-2:#ff6bb3;
-      --danger:#ef4444;
-      --success:#10b981;
+      --bg:#FEF1FF;         /* requested background */
+      --card:#ffffff;       /* card surface */
+      --ink:#1a2433;        /* main text */
+      --muted:#5b6471;      /* secondary text */
+      --border:#e7d9f0;     /* soft border */
+      --accent:#7b61ff;     /* primary accent */
+      --accent-2:#ff6bb3;   /* secondary accent */
+      --danger:#ef4444;     /* errors */
+      --success:#10b981;    /* success */
     }
     *{box-sizing:border-box}
-    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);}    
-    .container{max-width:980px;margin:0 auto;padding:20px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(31,41,55,.08);overflow:hidden}
-    header.hero{padding:20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:720px){header.hero{grid-template-columns:auto 1fr auto;align-items:center}}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{width:44px;height:44px;border-radius:12px;background:conic-gradient(from 210deg, var(--accent), var(--accent-2));opacity:.9}
-    h1{color:var(--ink);margin:0;font-size:1.35rem}
+    html,body{height:100%}
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(120deg,#0b0f14,#0f1520);}    
+    .container{max-width:980px;margin:40px auto;padding:0 16px}
+    .card{background:linear-gradient(180deg,#0f1623 0%,#0e1624 100%);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}
+    header.hero{padding:28px 24px;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:10px;background:radial-gradient(120px 60px at 30% 30%,var(--accent),transparent 60%),radial-gradient(120px 60px at 70% 70%,var(--accent2),transparent 60%);border:1px solid var(--border)}
+    h1{color:var(--text);margin:0;font-size:1.4rem;letter-spacing:.3px}
     .sub{color:var(--muted);font-size:.95rem}
 
-    form{padding:20px;display:grid;grid-template-columns:1fr;gap:16px}
-    @media(min-width:760px){form{grid-template-columns:repeat(12,1fr)} .span-12{grid-column:span 12}}
-    fieldset{border:1px solid var(--border);border-radius:14px;padding:14px;margin:0}
+    form{padding:24px;display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:700px){
+      form{grid-template-columns:repeat(12,1fr)}
+      .span-12{grid-column:span 12}
+      .span-6{grid-column:span 6}
+      .span-4{grid-column:span 4}
+      .span-3{grid-column:span 3}
+      .span-8{grid-column:span 8}
+    }
+
+    fieldset{border:1px solid var(--border);border-radius:14px;padding:16px;margin:0}
     legend{padding:0 8px;color:var(--muted);font-size:.95rem}
-    label{display:block;color:var(--ink);font-weight:600;margin-bottom:6px}
 
-    .row{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
+    label{display:block;color:var(--text);font-weight:600;margin-bottom:6px}
+    .hint{color:var(--muted);font-size:.85rem;margin-top:6px}
 
-    /* form inputs (text-like only) */
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="number"],
-    input[type="date"],
-    input[type="time"],
-    textarea,
-    select{
-      width:100%;
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--ink);
-      font-size:16px;
+    input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="date"],input[type="time"],textarea,select{
+      width:100%;padding:12px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1220;color:var(--text);outline:none;transition:box-shadow .15s,border-color .15s
     }
     textarea{min-height:110px;resize:vertical}
+    input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px #1a2b44;border-color:#35527a}
 
-    /* compact checkbox / radio chips */
-    .choices{display:flex;flex-wrap:wrap;gap:8px 10px;margin:6px 0 2px}
-    .choice{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;user-select:none;line-height:1}
-    .choice input{width:18px;height:18px;flex:0 0 auto;margin:0;accent-color:var(--accent)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:999px;background:#0c1422;color:var(--text);cursor:pointer;user-select:none}
+    .chip input{accent-color:var(--accent)}
 
-    .actions{display:grid;grid-template-columns:1fr;gap:10px}
-    @media(min-width:560px){.actions{grid-template-columns:auto auto auto auto}}
-    button{border:none;border-radius:12px;padding:12px 16px;font-weight:750;cursor:pointer;font-size:16px}
-    .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
-    .ghost{background:#fff;color:var(--ink);border:1px solid var(--border)}
+    .totals{display:flex;gap:16px;flex-wrap:wrap}
+    .summary{flex:1;min-width:260px;border:1px dashed var(--border);border-radius:12px;padding:12px;color:var(--text)}
+    .summary h3{margin:.2rem 0 .6rem;font-size:1rem;color:var(--muted)}
+
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    button{appearance:none;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .primary{background:linear-gradient(90deg,var(--accent2),var(--accent));color:#081019}
+    .ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
     .danger{background:var(--danger);color:white}
-    .footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+    .success{background:#20c997;color:#081019}
 
-    dialog{border:none;border-radius:16px;background:#fff;color:var(--ink);width:min(720px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.18)}
-    dialog::backdrop{background:rgba(0,0,0,.35)}
+    .footer{padding:18px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+
+    /* Modal */
+    dialog{border:none;border-radius:16px;background:#0f1623;color:var(--text);width:min(720px,92vw);box-shadow:0 10px 40px rgba(0,0,0,.45)}
+    dialog::backdrop{background:rgba(0,0,0,.5)}
     .modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:14px 16px}
     .modal-body{padding:16px}
     .modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--border)}
-    pre{white-space:pre-wrap;background:#f9f6ff;border:1px solid var(--border);border-radius:12px;padding:12px}
-    .required::after{content:" *";color:var(--danger)}
+    pre{white-space:pre-wrap;background:#0b1220;border:1px solid var(--border);border-radius:12px;padding:12px}
+
+    .required::after{content:" *";color:var(--danger);font-weight:700}
   </style>
 </head>
 <body>
@@ -85,106 +87,151 @@
           <div class="logo" aria-hidden="true"></div>
           <div>
             <h1>Event Catering Request</h1>
-            <div class="sub">Jarlein Escobar, Catering Manager \n We’ll follow up with a custom proposal.</div>
+            <div class="sub">Tell us the basics. We’ll confirm with a custom proposal.</div>
           </div>
         </div>
-        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent);text-decoration:none">(000) 000-0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent);text-decoration:none">orders@yourcatering.com</a></div>
+        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent2);text-decoration:none">(000) 000‑0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent2);text-decoration:none">orders@yourcatering.com</a></div>
       </header>
 
       <form id="cateringForm" novalidate>
+        <!-- Contact Information -->
         <fieldset class="span-12">
           <legend>Contact</legend>
           <div class="row">
-            <div><label for="name" class="required">Name</label><input id="name" name="name" required></div>
-            <div><label for="email" class="required">Email</label><input id="email" name="email" type="email" required></div>
+            <div>
+              <label for="name" class="required">Name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required />
+            </div>
+            <div>
+              <label for="email" class="required">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
           </div>
           <div class="row">
-            <div><label for="phone" class="required">Phone</label><input id="phone" name="phone" required></div>
-            <div><label for="company">Company / Organization</label><input id="company" name="company"></div>
-          </div>
-          <div class="row">
-            <div><label for="costCenter">Cost Center</label><input id="costCenter" name="costCenter" placeholder="Billing code or department"></div>
+            <div>
+              <label for="phone" class="required">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+            </div>
+            <div>
+              <label for="company">Company / Organization</label>
+              <input id="company" name="company" type="text" />
+            </div>
           </div>
         </fieldset>
 
+        <!-- Event Details -->
         <fieldset class="span-12">
           <legend>Event Details</legend>
           <div class="row">
-            <div><label for="eventDate" class="required">Event Date</label><input id="eventDate" name="eventDate" type="date" required></div>
-            <div><label for="location" class="required">Location / Address</label><input id="location" name="location" required></div>
+            <div>
+              <label for="eventDate" class="required">Event Date</label>
+              <input id="eventDate" name="eventDate" type="date" required />
+            </div>
+            <div>
+              <label for="location" class="required">Location / Address</label>
+              <input id="location" name="location" type="text" placeholder="Venue name, street, city" required />
+            </div>
           </div>
           <div class="row">
-            <div><label for="startTime" class="required">Start Time</label><input id="startTime" name="startTime" type="time" required></div>
-            <div><label for="endTime" class="required">End Time</label><input id="endTime" name="endTime" type="time" required></div>
+            <div>
+              <label for="startTime" class="required">Start Time</label>
+              <input id="startTime" name="startTime" type="time" required />
+            </div>
+            <div>
+              <label for="endTime" class="required">End Time</label>
+              <input id="endTime" name="endTime" type="time" required />
+            </div>
           </div>
           <div class="row">
-            <div><label for="guests" class="required">Estimated Guest #</label><input id="guests" name="guests" type="number" min="1" required></div>
-            <div><label for="serviceStyle" class="required">Service Style</label>
+            <div>
+              <label for="guests" class="required">Estimated Guest #</label>
+              <input id="guests" name="guests" type="number" min="1" step="1" required />
+            </div>
+            <div>
+              <label for="serviceStyle" class="required">Service Style</label>
               <select id="serviceStyle" name="serviceStyle" required>
                 <option value="" disabled selected>Select…</option>
-                <option>Disposable</option>
-                <option>China</option>
+                <option>Disposable Tableware</option>
+                <option>China / Reusable</option>
               </select>
             </div>
           </div>
         </fieldset>
 
+        <!-- Meal Preferences -->
         <fieldset class="span-12">
           <legend>Meal Preferences</legend>
           <label class="required">Type of Service (select all that apply)</label>
-          <div class="choices" role="group" aria-label="Meal types">
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Breakfast"><span>Breakfast</span></label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Lunch"><span>Lunch</span></label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Snacks"><span>Snacks</span></label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Appetizers"><span>Appetizers</span></label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Dinner"><span>Dinner</span></label>
+          <div class="chips" role="group" aria-label="Meal types">
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Breakfast"> Breakfast</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Lunch"> Lunch</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Snacks"> Snacks</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Appetizers"> Appetizers</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Dinner"> Dinner</label>
           </div>
-          <div class="row" style="margin-top:8px">
+          <div style="margin-top:14px" class="row">
             <div>
               <label class="required">Menu Preference</label>
-              <div class="choices" role="radiogroup" aria-label="Menu">
-                <label class="choice"><input type="radio" name="menuPref" value="Preferred Menu" required><span>Preferred Menu</span></label>
-                <label class="choice"><input type="radio" name="menuPref" value="Open to Suggestions" required><span>Open to Suggestions</span></label>
+              <div class="chips" role="radiogroup" aria-label="Menu">
+                <label class="chip"><input type="radio" name="menuPref" value="Preferred Menu" required> Preferred Menu (describe below)</label>
+                <label class="chip"><input type="radio" name="menuPref" value="Open to Suggestions" required> Open to Suggestions</label>
               </div>
-              <textarea id="menuNotes" name="menuNotes" placeholder="Dietary preferences, cuisine ideas, must-haves" style="margin-top:8px"></textarea>
+              <textarea id="menuNotes" name="menuNotes" placeholder="Dietary preferences, cuisine ideas, must‑haves"></textarea>
             </div>
             <div>
               <label class="required">Catering Type</label>
-              <div class="choices" role="radiogroup" aria-label="Catering type">
-                <label class="choice"><input type="radio" name="cateringType" value="Regular" required><span>Regular</span></label>
-                <label class="choice"><input type="radio" name="cateringType" value="VIP" required><span>VIP</span></label>
+              <div class="chips" role="radiogroup" aria-label="Catering type">
+                <label class="chip"><input type="radio" name="cateringType" value="Regular" required> Regular</label>
+                <label class="chip"><input type="radio" name="cateringType" value="VIP" required> VIP</label>
               </div>
             </div>
           </div>
         </fieldset>
 
+        <!-- Budget -->
         <fieldset class="span-12">
           <legend>Budget</legend>
           <div class="row">
-            <div><label for="budgetPer" class="required">Budget per Person (USD)</label><input id="budgetPer" name="budgetPer" type="number" min="0" step="0.01" required></div>
-            <div><label for="totalBudget">Total Budget (USD)</label><input id="totalBudget" name="totalBudget" type="number" min="0" step="0.01"></div>
+            <div>
+              <label for="budgetPer" class="required">Budget per Person (USD)</label>
+              <input id="budgetPer" name="budgetPer" type="number" min="0" step="0.01" required />
+              <div class="hint">We’ll propose options within this range.</div>
+            </div>
+            <div>
+              <label for="totalBudget">Total Budget (USD)</label>
+              <input id="totalBudget" name="totalBudget" type="number" min="0" step="0.01" />
+              <div class="hint">Optional. If left blank, we’ll estimate from guests × per‑person.</div>
+            </div>
           </div>
           <div class="row">
-            <div><label class="choice" style="padding:8px 10px"><input type="checkbox" id="rush" name="rush"><span>Last-Minute Event (within 48 hrs) — $200 rush fee</span></label></div>
+            <div>
+              <label class="chip"><input type="checkbox" id="rush" name="rush"> Last‑Minute Event (within 48 hrs) — <strong>$200 rush fee</strong></label>
+            </div>
+            <div>
+              <label for="promo">Promo / Internal Code</label>
+              <input id="promo" name="promo" type="text" />
+            </div>
           </div>
-          <div class="row">
-            <div class="summary" style="border:1px dashed var(--border);border-radius:12px;padding:12px;background:#fff">
-              <strong>Live Estimate</strong>
-              <div id="estimateLines" style="margin-top:6px">
-                <div>Guests × Per-person: <strong id="calcBase">—</strong></div>
+          <div class="totals">
+            <div class="summary">
+              <h3>Live Estimate</h3>
+              <div id="estimateLines">
+                <div>Guests × Per‑person: <strong id="calcBase">—</strong></div>
                 <div>Rush Fee: <strong id="calcRush">—</strong></div>
                 <div style="margin-top:6px">Estimated Total: <strong id="calcTotal">—</strong></div>
               </div>
-              <div class="sub" style="margin-top:6px">For guidance only. Final quote follows review.</div>
+              <div class="hint">For guidance only. Final quote follows after we review your request.</div>
             </div>
           </div>
         </fieldset>
 
+        <!-- Notes -->
         <fieldset class="span-12">
           <legend>Additional Notes</legend>
-          <textarea id="notes" name="notes"></textarea>
+          <textarea id="notes" name="notes" placeholder="Setup needs, onsite staff, allergies, rentals, timeline, etc."></textarea>
         </fieldset>
 
+        <!-- Actions -->
         <div class="span-12 actions">
           <button class="primary" type="submit">Preview & Send</button>
           <button class="ghost" type="button" id="copyBtn">Copy Summary</button>
@@ -193,25 +240,40 @@
         </div>
       </form>
 
-      <div class="footer">© <span id="year"></span> Your Catering Co. · By submitting, you agree to be contacted about your event.</div>
+      <div class="footer">
+        <div>© <span id="year"></span> Your Catering Co.</div>
+        <div>By submitting, you agree to be contacted about your event.</div>
+      </div>
     </div>
   </div>
 
-  <dialog id="previewModal">
-    <div class="modal-head"><strong>Request Preview</strong><button class="ghost" onclick="closeModal()">Close</button></div>
-    <div class="modal-body"><pre id="previewText"></pre></div>
+  <!-- Modal -->
+  <dialog id="previewModal" aria-labelledby="modaltitle">
+    <div class="modal-head">
+      <strong id="modaltitle">Request Preview</strong>
+      <button class="ghost" onclick="closeModal()">Close</button>
+    </div>
+    <div class="modal-body">
+      <pre id="previewText"></pre>
+    </div>
     <div class="modal-actions">
       <button class="ghost" onclick="copySummary()">Copy</button>
-      <button class="success" id="sendBtn">Send</button>
+      <button class="success" id="mailtoBtn">Email Request</button>
       <button class="primary" onclick="window.print()">Print / Save PDF</button>
     </div>
   </dialog>
 
   <script>
-    const $ = s => document.querySelector(s);
-    const $$ = s => [...document.querySelectorAll(s)];
-    $('#year').textContent = new Date().getFullYear();
-    $('#eventDate').setAttribute('min', new Date().toISOString().split('T')[0]);
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => [...document.querySelectorAll(sel)];
+
+    // Set min date to today and current year
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    $('#year').textContent = yyyy;
+    const pad = n => String(n).padStart(2,'0');
+    const minDate = `${yyyy}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+    $('#eventDate').setAttribute('min', minDate);
 
     const form = $('#cateringForm');
     const rush = $('#rush');
@@ -222,45 +284,49 @@
     const calcRush = $('#calcRush');
     const calcTotal = $('#calcTotal');
 
-    const money = n => (isNaN(n) || !isFinite(n)) ? '—' : n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+    function money(n){ if(isNaN(n) || !isFinite(n)) return '—'; return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}); }
+
     function estimate(){
       const g = parseInt(guests.value,10) || 0;
       const per = parseFloat(budgetPer.value) || 0;
       const base = g * per;
       const rushFee = rush.checked ? 200 : 0;
       const total = (totalBudget.value ? parseFloat(totalBudget.value) : base) + rushFee;
-      if(calcBase) calcBase.textContent = base ? money(base) : '—';
-      if(calcRush) calcRush.textContent = rushFee ? money(rushFee) : '$0';
-      if(calcTotal) calcTotal.textContent = total ? money(total) : '—';
+      calcBase.textContent = base ? money(base) : '—';
+      calcRush.textContent = rushFee ? money(rushFee) : '$0';
+      calcTotal.textContent = total ? money(total) : '—';
     }
-    ['input','change'].forEach(ev=>[guests,budgetPer,totalBudget,rush].forEach(el=>el && el.addEventListener(ev,estimate)));
+    ['input','change'].forEach(ev=>{
+      [guests,budgetPer,totalBudget,rush].forEach(el=>el.addEventListener(ev,estimate));
+    });
     estimate();
 
     function serialize(){
-      const d = new FormData(form);
+      const data = new FormData(form);
       const mealTypes = $$('input[name="mealTypes"]:checked').map(x=>x.value);
-      const menuPref = document.querySelector('input[name="menuPref"]:checked')?.value || '';
-      const cateringType = document.querySelector('input[name="cateringType"]:checked')?.value || '';
+      const pref = (data.get('menuPref')||'');
+      const catType = (data.get('cateringType')||'');
+
       return {
-        name: d.get('name'),
-        email: d.get('email'),
-        phone: d.get('phone'),
-        company: d.get('company')||'',
-        costCenter: d.get('costCenter')||'',
-        eventDate: d.get('eventDate'),
-        location: d.get('location'),
-        startTime: d.get('startTime'),
-        endTime: d.get('endTime'),
-        guests: d.get('guests'),
-        serviceStyle: d.get('serviceStyle'),
+        name: data.get('name'),
+        email: data.get('email'),
+        phone: data.get('phone'),
+        company: data.get('company')||'',
+        eventDate: data.get('eventDate'),
+        location: data.get('location'),
+        startTime: data.get('startTime'),
+        endTime: data.get('endTime'),
+        guests: data.get('guests'),
+        serviceStyle: data.get('serviceStyle'),
         mealTypes,
-        menuPref,
-        menuNotes: d.get('menuNotes')||'',
-        cateringType,
-        budgetPer: d.get('budgetPer'),
-        totalBudget: d.get('totalBudget')||'',
-        rush: !!d.get('rush'),
-        notes: d.get('notes')||''
+        menuPref: pref,
+        menuNotes: data.get('menuNotes')||'',
+        cateringType: catType,
+        budgetPer: data.get('budgetPer'),
+        totalBudget: data.get('totalBudget')||'',
+        rush: !!data.get('rush'),
+        promo: data.get('promo')||'',
+        notes: data.get('notes')||''
       };
     }
 
@@ -275,136 +341,66 @@
     }
 
     function requiredFilled(){
-      const ids = ['name','email','phone','eventDate','location','startTime','endTime','guests','serviceStyle','budgetPer'];
-      for(const id of ids){
+      const requiredIds = ['name','email','phone','eventDate','location','startTime','endTime','guests','serviceStyle','budgetPer'];
+      for(const id of requiredIds){
         const el = document.getElementById(id);
-        if(!el || !el.value){
-          alert(`Please fill the ${id.replace(/([A-Z])/g,' $1').toLowerCase()} field.`);
-          el && el.focus();
-          return false;
-        }
+        if(!el.value){ el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); return false; }
       }
+      // At least one meal type
       if($$('input[name="mealTypes"]:checked').length === 0){
         alert('Select at least one meal type.');
         return false;
       }
+      // Menu pref and catering type
       if(!document.querySelector('input[name="menuPref"]:checked')){ alert('Select a menu preference.'); return false; }
-      if(!document.querySelector('input[name="cateringType"]:checked')){ alert('Select a catering type.'); return false; }
+      if(!document.querySelector('input[name="cateringType"]:checked')){ alert('Select a catering type (Regular or VIP).'); return false; }
       return true;
     }
 
-    function pretty(o){
-      const base = (parseInt(o.guests||0,10) * parseFloat(o.budgetPer||0))||0;
-      const rushFee = o.rush ? 200 : 0;
-      const estTotal = (o.totalBudget? parseFloat(o.totalBudget): base) + rushFee;
-      const list = a => a && a.length ? a.join(', ') : '(none)';
-      return (
-`CATERING REQUEST
+    function buildSummary(obj){
+      const base = (parseInt(obj.guests||0,10) * parseFloat(obj.budgetPer||0))||0;
+      const rushFee = obj.rush ? 200 : 0;
+      const estTotal = (obj.totalBudget? parseFloat(obj.totalBudget): base) + rushFee;
+      return `CATERING REQUEST\n\nCONTACT\nName: ${obj.name}\nEmail: ${obj.email}\nPhone: ${obj.phone}\nCompany: ${obj.company}\n\nEVENT\nDate: ${obj.eventDate}\nLocation: ${obj.location}\nStart: ${obj.startTime}\nEnd: ${obj.endTime}\nGuests: ${obj.guests}\nService Style: ${obj.serviceStyle}\n\nMEALS\nTypes: ${obj.mealTypes.join(', ')}\nMenu Preference: ${obj.menuPref}\nMenu Notes: ${obj.menuNotes}\nCatering Type: ${obj.cateringType}\n\nBUDGET\nPer Person: $${Number(obj.budgetPer||0).toFixed(2)}\nTotal Budget (client): ${obj.totalBudget? `$${Number(obj.totalBudget).toFixed(2)}`:'(not specified)'}\nRush (within 48h): ${obj.rush? 'Yes (+$200)': 'No'}\n\nESTIMATE\nGuests × Per‑person: $${base.toFixed(2)}\nRush Fee: $${rushFee.toFixed(2)}\nEstimated Total: $${estTotal.toFixed(2)}\n\nNOTES\n${obj.notes || '(none)'}\n\n— Submitted via website`; }
 
-`+
-`CONTACT
-  Name: ${o.name}
-  Email: ${o.email}
-  Phone: ${o.phone}
-  Company: ${o.company||'(n/a)'}
-  Cost Center: ${o.costCenter||'(n/a)'}
-
-`+
-`EVENT
-  Date: ${o.eventDate}
-  Location: ${o.location}
-  Start: ${o.startTime}
-  End: ${o.endTime}
-  Guests: ${o.guests}
-  Service Style: ${o.serviceStyle}
-
-`+
-`MEALS
-  Types: ${list(o.mealTypes)}
-  Menu Preference: ${o.menuPref}
-  Menu Notes: ${o.menuNotes || '(none)'}
-  Catering Type: ${o.cateringType}
-
-`+
-`BUDGET
-  Per Person: $${Number(o.budgetPer||0).toFixed(2)}
-  Total Budget: ${o.totalBudget? `$${Number(o.totalBudget).toFixed(2)}`:'(not specified)'}
-  Rush (48h): ${o.rush?'Yes':'No'}
-
-`+
-`ESTIMATE
-  Guests × Per-person: $${base.toFixed(2)}
-  Rush Fee: $${rushFee.toFixed(2)}
-  Estimated Total: $${estTotal.toFixed(2)}
-
-`+
-`NOTES
-  ${o.notes || '(none)'}
-
-— Submitted via website`
-      );
+    function openModal(summary){
+      $('#previewText').textContent = summary;
+      const dialog = $('#previewModal');
+      if(typeof dialog.showModal === 'function') dialog.showModal(); else alert(summary);
     }
-
-    function bodyText(o){
-      const base = (parseInt(o.guests||0,10) * parseFloat(o.budgetPer||0))||0;
-      const rushFee = o.rush ? 200 : 0;
-      const estTotal = (o.totalBudget? parseFloat(o.totalBudget): base) + rushFee;
-      const lines = [
-        'CATERING REQUEST','',
-        '[CONTACT]',
-        `Name: ${o.name}`,
-        `Email: ${o.email}`,
-        `Phone: ${o.phone}`,
-        `Company: ${o.company || '(n/a)'}`,
-        `Cost Center: ${o.costCenter || '(n/a)'}`,
-        '',
-        '[EVENT]',
-        `Date: ${o.eventDate}`,
-        `Location: ${o.location}`,
-        `Start: ${o.startTime}`,
-        `End: ${o.endTime}`,
-        `Guests: ${o.guests}`,
-        `Service Style: ${o.serviceStyle}`,
-        '',
-        '[MEALS]',
-        `Types: ${o.mealTypes && o.mealTypes.length? o.mealTypes.join(', ') : '(none)'}`,
-        `Menu Preference: ${o.menuPref}`,
-        `Menu Notes: ${o.menuNotes || '(none)'}`,
-        `Catering Type: ${o.cateringType}`,
-        '',
-        '[BUDGET]',
-        `Per Person: $${Number(o.budgetPer||0).toFixed(2)}`,
-        `Total Budget: ${o.totalBudget? `$${Number(o.totalBudget).toFixed(2)}` : '(not specified)'}`,
-        `Rush (48h): ${o.rush? 'Yes (+$200)' : 'No'}`,
-        '',
-        '[ESTIMATE]',
-        `Guests × Per-person: $${base.toFixed(2)}`,
-        `Rush Fee: $${rushFee.toFixed(2)}`,
-        `Estimated Total: $${estTotal.toFixed(2)}`,
-        '',
-        '[NOTES]',
-        `${o.notes || '(none)'}`,
-        '',
-        '— Submitted via website'
-      ];
-      return lines.join('
-');
-    }
-
-    function openModal(text){ $('#previewText').textContent = text; $('#previewModal').showModal(); }
     function closeModal(){ $('#previewModal').close(); }
-    function copySummary(){ navigator.clipboard.writeText($('#previewText').textContent); }
-    function mailtoLink(body){ return `mailto:orders@yourcatering.com?subject=${encodeURIComponent('New Catering Request')}&body=${encodeURIComponent(body)}`; }
+
+    function copySummary(){
+      const txt = $('#previewText').textContent;
+      navigator.clipboard.writeText(txt).then(()=>{
+        alert('Summary copied to clipboard.');
+      });
+    }
+
+    function buildMailto(summary){
+      const to = 'orders@yourcatering.com'; // TODO: replace with your inbox
+      const subject = encodeURIComponent('New Catering Request');
+      const body = encodeURIComponent(summary);
+      return `mailto:${to}?subject=${subject}&body=${body}`;
+    }
 
     form.addEventListener('submit', (e)=>{
       e.preventDefault();
       if(!requiredFilled() || !validateTimes()) return;
-      const o = serialize();
-      openModal(pretty(o));
-      $('#sendBtn').onclick = ()=> window.location.href = mailtoLink(bodyText(o));
+      const obj = serialize();
+      const summary = buildSummary(obj);
+      openModal(summary);
+      const link = buildMailto(summary);
+      const btn = $('#mailtoBtn');
+      btn.onclick = ()=>{ window.location.href = link; };
     });
 
-    $('#copyBtn').addEventListener('click', ()=>{ if(!requiredFilled()) return; copySummary(); });
+    $('#copyBtn').addEventListener('click', ()=>{
+      if(!requiredFilled()) return;
+      const summary = buildSummary(serialize());
+      navigator.clipboard.writeText(summary).then(()=> alert('Summary copied.'));
+    });
+
     $('#printBtn').addEventListener('click', ()=> window.print());
   </script>
 </body>
