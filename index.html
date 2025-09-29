@@ -1,87 +1,581 @@
 <!DOCTYPE html>
-];
-return lines.join('
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catering Request</title>
+  <meta name="description" content="Submit a catering request with event details, menu preferences, and budget." />
+  <style>
+    :root{
+      --bg:#FEF1FF;         /* requested background */
+      --card:#ffffff;       /* card surface */
+      --ink:#1a2433;        /* main text */
+      --muted:#5b6471;      /* secondary text */
+      --border:#e7d9f0;     /* soft border */
+      --accent:#7b61ff;     /* primary accent */
+      --accent-2:#ff6bb3;   /* secondary accent */
+      --danger:#ef4444;     /* errors */
+      --success:#10b981;    /* success */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);}    
+
+    .container{max-width:980px;margin:0 auto;padding:20px}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(31,41,55,.08);overflow:hidden}
+
+    header.hero{padding:20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:720px){header.hero{grid-template-columns:auto 1fr auto;align-items:center}}
+
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:12px;background: conic-gradient(from 210deg, var(--accent), var(--accent-2)); opacity:.9}
+    h1{color:var(--ink);margin:0;font-size:1.35rem;letter-spacing:.2px}
+    .sub{color:var(--muted);font-size:.95rem}
+
+    form{padding:20px;display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:760px){
+      form{grid-template-columns:repeat(12,1fr)}
+      .span-12{grid-column:span 12}
+      .span-6{grid-column:span 6}
+      .span-4{grid-column:span 4}
+      .span-3{grid-column:span 3}
+      .span-8{grid-column:span 8}
+    }
+
+    fieldset{border:1px solid var(--border);border-radius:14px;padding:14px;margin:0}
+    legend{padding:0 8px;color:var(--muted);font-size:.95rem}
+
+    label{display:block;color:var(--ink);font-weight:650;margin-bottom:6px}
+    .hint{color:var(--muted);font-size:.85rem;margin-top:6px}
+
+    input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="date"],input[type="time"],textarea,select{
+      width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--ink);outline:none;transition:box-shadow .15s,border-color .15s;font-size:16px
+    }
+    textarea{min-height:110px;resize:vertical}
+    input:focus,select:focus,textarea:focus{box-shadow:0 0 0 4px rgba(123,97,255,.18);border-color:#c9b8ff}
+
+    .row{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
+
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--ink);cursor:pointer;user-select:none}
+    .chip input{accent-color:var(--accent)}
+
+    .totals{display:flex;gap:16px;flex-wrap:wrap}
+    .summary{flex:1;min-width:260px;border:1px dashed var(--border);border-radius:12px;padding:12px;color:var(--ink);background:#fff}
+    .summary h3{margin:.2rem 0 .6rem;font-size:1rem;color:var(--muted)}
+
+    .actions{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:560px){.actions{grid-template-columns:auto auto auto auto;justify-content:start}}
+
+    button{appearance:none;border:none;border-radius:12px;padding:12px 16px;font-weight:750;cursor:pointer;font-size:16px}
+    .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    .ghost{background:#fff;color:var(--ink);border:1px solid var(--border)}
+    .danger{background:var(--danger);color:white}
+    .success{background:var(--success);color:white}
+
+    .footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+
+    /* Modal */
+    dialog{border:none;border-radius:16px;background:#fff;color:var(--ink);width:min(720px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.18)}
+    dialog::backdrop{background:rgba(0,0,0,.35)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:14px 16px}
+    .modal-body{padding:16px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px;border-top:1px solid var(--border)}
+    pre{white-space:pre-wrap;background:#f9f6ff;border:1px solid var(--border);border-radius:12px;padding:12px}
+
+    .required::after{content:" *";color:var(--danger);font-weight:700}
+
+    /* Better mobile spacing */
+    @media(max-width:399px){
+      header.hero{padding:16px}
+      form{padding:16px}
+      .footer{padding:14px 16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <header class="hero">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Event Catering Request</h1>
+            <div class="sub">Looks great on desktop and phone. We’ll follow up with a custom proposal.</div>
+          </div>
+        </div>
+        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent);text-decoration:none">(000) 000‑0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent);text-decoration:none">orders@yourcatering.com</a></div>
+      </header>
+
+      <form id="cateringForm" novalidate>
+        <!-- Contact Information -->
+        <fieldset class="span-12">
+          <legend>Contact</legend>
+          <div class="row">
+            <div>
+              <label for="name" class="required">Name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required />
+            </div>
+            <div>
+              <label for="email" class="required">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="phone" class="required">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+            </div>
+            <div>
+              <label for="company">Company / Organization</label>
+              <input id="company" name="company" type="text" />
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Event Details -->
+        <fieldset class="span-12">
+          <legend>Event Details</legend>
+          <div class="row">
+            <div>
+              <label for="eventDate" class="required">Event Date</label>
+              <input id="eventDate" name="eventDate" type="date" required />
+            </div>
+            <div>
+              <label for="location" class="required">Location / Address</label>
+              <input id="location" name="location" type="text" placeholder="Venue name, street, city" required />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="startTime" class="required">Start Time</label>
+              <input id="startTime" name="startTime" type="time" required />
+            </div>
+            <div>
+              <label for="endTime" class="required">End Time</label>
+              <input id="endTime" name="endTime" type="time" required />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="guests" class="required">Estimated Guest #</label>
+              <input id="guests" name="guests" type="number" min="1" step="1" required />
+            </div>
+            <div>
+              <label for="serviceStyle" class="required">Service Style</label>
+              <select id="serviceStyle" name="serviceStyle" required>
+                <option value="" disabled selected>Select…</option>
+                <option>Disposable Tableware</option>
+                <option>China / Reusable</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Meal Preferences -->
+        <fieldset class="span-12">
+          <legend>Meal Preferences</legend>
+          <label class="required">Type of Service (select all that apply)</label>
+          <div class="chips" role="group" aria-label="Meal types">
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Breakfast"> Breakfast</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Lunch"> Lunch</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Snacks"> Snacks</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Appetizers"> Appetizers</label>
+            <label class="chip"><input type="checkbox" name="mealTypes" value="Dinner"> Dinner</label>
+          </div>
+          <div style="margin-top:14px" class="row">
+            <div>
+              <label class="required">Menu Preference</label>
+              <div class="chips" role="radiogroup" aria-label="Menu">
+                <label class="chip"><input type="radio" name="menuPref" value="Preferred Menu" required> Preferred Menu (describe below)</label>
+                <label class="chip"><input type="radio" name="menuPref" value="Open to Suggestions" required> Open to Suggestions</label>
+              </div>
+              <textarea id="menuNotes" name="menuNotes" placeholder="Dietary preferences, cuisine ideas, must‑haves"></textarea>
+            </div>
+            <div>
+              <label class="required">Catering Type</label>
+              <div class="chips" role="radiogroup" aria-label="Catering type">
+                <label class="chip"><input type="radio" name="cateringType" value="Regular" required> Regular</label>
+                <label class="chip"><input type="radio" name="cateringType" value="VIP" required> VIP</label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Budget -->
+        <fieldset class="span-12">
+          <legend>Budget</legend>
+          <div class="row">
+            <div>
+              <label for="budgetPer" class="required">Budget per Person (USD)</label>
+              <input id="budgetPer" name="budgetPer" type="number" min="0" step="0.01" required />
+              <div class="hint">We’ll propose options within this range.</div>
+            </div>
+            <div>
+              <label for="totalBudget">Total Budget (USD)</label>
+              <input id="totalBudget" name="totalBudget" type="number" min="0" step="0.01" />
+              <div class="hint">Optional. If left blank, we’ll estimate from guests × per‑person.</div>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label class="chip"><input type="checkbox" id="rush" name="rush"> Last‑Minute Event (within 48 hrs) — <strong>$200 rush fee</strong></label>
+            </div>
+            <div>
+              <label for="promo">Promo / Internal Code</label>
+              <input id="promo" name="promo" type="text" />
+            </div>
+          </div>
+          <div class="totals">
+            <div class="summary">
+              <h3>Live Estimate</h3>
+              <div id="estimateLines">
+                <div>Guests × Per‑person: <strong id="calcBase">—</strong></div>
+                <div>Rush Fee: <strong id="calcRush">—</strong></div>
+                <div style="margin-top:6px">Estimated Total: <strong id="calcTotal">—</strong></div>
+              </div>
+              <div class="hint">For guidance only. Final quote follows after we review your request.</div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Notes -->
+        <fieldset class="span-12">
+          <legend>Additional Notes</legend>
+          <textarea id="notes" name="notes" placeholder="Setup needs, onsite staff, allergies, rentals, timeline, etc."></textarea>
+        </fieldset>
+
+        <!-- Actions -->
+        <div class="span-12 actions">
+          <button class="primary" type="submit">Preview & Send</button>
+          <button class="ghost" type="button" id="copyBtn">Copy Summary</button>
+          <button class="ghost" type="button" id="printBtn">Print / Save PDF</button>
+          <button class="danger" type="reset">Clear</button>
+        </div>
+      </form>
+
+      <div class="footer">
+        <div>© <span id="year"></span> Your Catering Co.</div>
+        <div>By submitting, you agree to be contacted about your event.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <dialog id="previewModal" aria-labelledby="modaltitle">
+    <div class="modal-head">
+      <strong id="modaltitle">Request Preview</strong>
+      <button class="ghost" onclick="closeModal()">Close</button>
+    </div>
+    <div class="modal-body">
+      <pre id="previewText"></pre>
+    </div>
+    <div class="modal-actions">
+      <button class="ghost" onclick="copySummary()">Copy</button>
+      <button class="success" id="sendBtn" title="Send via backend (Formspree/EmailJS) if configured; otherwise opens your email app">Send</button>
+      <button class="primary" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </dialog>
+
+  <script>
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => [...document.querySelectorAll(sel)];
+
+    // ====== CONFIG: choose one to enable direct email without opening a client ======
+    // Option A) Formspree (no-code backend). Create a Formspree form and paste the endpoint URL below.
+    const FORMSPREE_URL = ""; // e.g. "https://formspree.io/f/abcdeqrs"
+
+    // Option B) EmailJS (client-side email). Include their SDK and your keys; see: https://www.emailjs.com/docs/sdk/installation/
+    // To enable, add <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script> in your HTML
+    // and set the following three values:
+    const EMAILJS_PUBLIC_KEY = "";      // e.g. "your_public_key"
+    const EMAILJS_SERVICE_ID = "";      // e.g. "service_xxx"
+    const EMAILJS_TEMPLATE_ID = "";     // e.g. "template_xxx"
+
+    // ================== DO NOT EDIT BELOW UNLESS NEEDED ==================
+
+    // Set min date to today and current year
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    $('#year').textContent = yyyy;
+    const pad = n => String(n).padStart(2,'0');
+    const minDate = `${yyyy}-${pad(today.getMonth()+1)}-${pad(today.getDate())}`;
+    $('#eventDate').setAttribute('min', minDate);
+
+    const form = $('#cateringForm');
+    const rush = $('#rush');
+    const guests = $('#guests');
+    const budgetPer = $('#budgetPer');
+    const totalBudget = $('#totalBudget');
+    const calcBase = $('#calcBase');
+    const calcRush = $('#calcRush');
+    const calcTotal = $('#calcTotal');
+
+    function money(n){ if(isNaN(n) || !isFinite(n)) return '—'; return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}); }
+
+    function estimate(){
+      const g = parseInt(guests.value,10) || 0;
+      const per = parseFloat(budgetPer.value) || 0;
+      const base = g * per;
+      const rushFee = rush.checked ? 200 : 0;
+      const total = (totalBudget.value ? parseFloat(totalBudget.value) : base) + rushFee;
+      calcBase.textContent = base ? money(base) : '—';
+      calcRush.textContent = rushFee ? money(rushFee) : '$0';
+      calcTotal.textContent = total ? money(total) : '—';
+    }
+    ['input','change'].forEach(ev=>{
+      [guests,budgetPer,totalBudget,rush].forEach(el=>el.addEventListener(ev,estimate));
+    });
+    estimate();
+
+    function serialize(){
+      const data = new FormData(form);
+      const mealTypes = $$('input[name="mealTypes"]:checked').map(x=>x.value);
+      const pref = (data.get('menuPref')||'');
+      const catType = (data.get('cateringType')||'');
+
+      return {
+        name: data.get('name'),
+        email: data.get('email'),
+        phone: data.get('phone'),
+        company: data.get('company')||'',
+        eventDate: data.get('eventDate'),
+        location: data.get('location'),
+        startTime: data.get('startTime'),
+        endTime: data.get('endTime'),
+        guests: data.get('guests'),
+        serviceStyle: data.get('serviceStyle'),
+        mealTypes,
+        menuPref: pref,
+        menuNotes: data.get('menuNotes')||'',
+        cateringType: catType,
+        budgetPer: data.get('budgetPer'),
+        totalBudget: data.get('totalBudget')||'',
+        rush: !!data.get('rush'),
+        promo: data.get('promo')||'',
+        notes: data.get('notes')||''
+      };
+    }
+
+    function validateTimes(){
+      const s = $('#startTime').value;
+      const e = $('#endTime').value;
+      if(s && e && s >= e){
+        alert('End time must be after start time.');
+        return false;
+      }
+      return true;
+    }
+
+    function requiredFilled(){
+      const requiredIds = ['name','email','phone','eventDate','location','startTime','endTime','guests','serviceStyle','budgetPer'];
+      for(const id of requiredIds){
+        const el = document.getElementById(id);
+        if(!el.value){ el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); return false; }
+      }
+      // At least one meal type
+      if($$('input[name="mealTypes"]:checked').length === 0){
+        alert('Select at least one meal type.');
+        return false;
+      }
+      // Menu pref and catering type
+      if(!document.querySelector('input[name="menuPref"]:checked')){ alert('Select a menu preference.'); return false; }
+      if(!document.querySelector('input[name="cateringType"]:checked')){ alert('Select a catering type (Regular or VIP).'); return false; }
+      return true;
+    }
+
+    // Pretty fixed-width summary for preview/copy
+    function prettySummary(o){
+      const base = (parseInt(o.guests||0,10) * parseFloat(o.budgetPer||0))||0;
+      const rushFee = o.rush ? 200 : 0;
+      const estTotal = (o.totalBudget? parseFloat(o.totalBudget): base) + rushFee;
+      const on = v => v? 'Yes' : 'No';
+      const list = (arr)=> (arr && arr.length? arr.join(', ') : '(none)');
+      return (
+`CATERING REQUEST
+
+`+
+`CONTACT
+`+
+`  Name            : ${o.name}
+`+
+`  Email           : ${o.email}
+`+
+`  Phone           : ${o.phone}
+`+
+`  Company         : ${o.company || '(n/a)'}
+
+`+
+`EVENT
+`+
+`  Date            : ${o.eventDate}
+`+
+`  Location        : ${o.location}
+`+
+`  Start           : ${o.startTime}
+`+
+`  End             : ${o.endTime}
+`+
+`  Guests          : ${o.guests}
+`+
+`  Service Style   : ${o.serviceStyle}
+
+`+
+`MEALS
+`+
+`  Types           : ${list(o.mealTypes)}
+`+
+`  Menu Preference : ${o.menuPref}
+`+
+`  Menu Notes      : ${o.menuNotes || '(none)'}
+`+
+`  Catering Type   : ${o.cateringType}
+
+`+
+`BUDGET
+`+
+`  Per Person      : $${Number(o.budgetPer||0).toFixed(2)}
+`+
+`  Total Budget    : ${o.totalBudget? `$${Number(o.totalBudget).toFixed(2)}`:'(not specified)'}
+`+
+`  Rush (48h)      : ${on(o.rush)}
+
+`+
+`ESTIMATE
+`+
+`  Guests × Per    : $${base.toFixed(2)}
+`+
+`  Rush Fee        : $${rushFee.toFixed(2)}
+`+
+`  Estimated Total : $${estTotal.toFixed(2)}
+
+`+
+`NOTES
+`+
+`  ${o.notes || '(none)'}
+
+`+
+`— Submitted via website`);
+    }
+
+    // Line-by-line summary optimized for mailto body
+    function lineSummary(o){
+      const base = (parseInt(o.guests||0,10) * parseFloat(o.budgetPer||0))||0;
+      const rushFee = o.rush ? 200 : 0;
+      const estTotal = (o.totalBudget? parseFloat(o.totalBudget): base) + rushFee;
+      const lines = [
+        'CATERING REQUEST',
+        '',
+        '[CONTACT]',
+        `Name: ${o.name}`,
+        `Email: ${o.email}`,
+        `Phone: ${o.phone}`,
+        `Company: ${o.company || '(n/a)'}`,
+        '',
+        '[EVENT]',
+        `Date: ${o.eventDate}`,
+        `Location: ${o.location}`,
+        `Start: ${o.startTime}`,
+        `End: ${o.endTime}`,
+        `Guests: ${o.guests}`,
+        `Service Style: ${o.serviceStyle}`,
+        '',
+        '[MEALS]',
+        `Types: ${o.mealTypes && o.mealTypes.length? o.mealTypes.join(', ') : '(none)'}`,
+        `Menu Preference: ${o.menuPref}`,
+        `Menu Notes: ${o.menuNotes || '(none)'}`,
+        `Catering Type: ${o.cateringType}`,
+        '',
+        '[BUDGET]',
+        `Per Person: $${Number(o.budgetPer||0).toFixed(2)}`,
+        `Total Budget: ${o.totalBudget? `$${Number(o.totalBudget).toFixed(2)}` : '(not specified)'}`,
+        `Rush (48h): ${o.rush? 'Yes (+$200)' : 'No'}`,
+        '',
+        '[ESTIMATE]',
+        `Guests × Per-person: $${base.toFixed(2)}`,
+        `Rush Fee: $${rushFee.toFixed(2)}`,
+        `Estimated Total: $${estTotal.toFixed(2)}`,
+        '',
+        '[NOTES]',
+        `${o.notes || '(none)'}`,
+        '',
+        '— Submitted via website'
+      ];
+      return lines.join('
 ');
-}
+    }
 
+    function openModal(summary){
+      $('#previewText').textContent = summary;
+      const dialog = $('#previewModal');
+      if(typeof dialog.showModal === 'function') dialog.showModal(); else alert(summary);
+    }
+    function closeModal(){ $('#previewModal').close(); }
 
-function openModal(summary){
-$('#previewText').textContent = summary;
-const dialog = $('#previewModal');
-if(typeof dialog.showModal === 'function') dialog.showModal(); else alert(summary);
-}
-function closeModal(){ $('#previewModal').close(); }
+    function copySummary(){
+      const txt = $('#previewText').textContent;
+      navigator.clipboard.writeText(txt).then(()=>{
+        alert('Summary copied to clipboard.');
+      });
+    }
 
+    function mailtoLink(body){
+      const to = 'orders@yourcatering.com'; // TODO: replace with your inbox
+      const subject = encodeURIComponent('New Catering Request');
+      const b = encodeURIComponent(body);
+      return `mailto:${to}?subject=${subject}&body=${b}`;
+    }
 
-function copySummary(){
-const txt = $('#previewText').textContent;
-navigator.clipboard.writeText(txt).then(()=>{
-alert('Summary copied to clipboard.');
-});
-}
+    async function tryFormspree(payload){
+      if(!FORMSPREE_URL) return false;
+      try{
+        const res = await fetch(FORMSPREE_URL,{
+          method:'POST',
+          headers:{'Accept':'application/json','Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        if(res.ok){ alert('Submitted! We\'ll be in touch shortly.'); return true; }
+        else{ const t = await res.text(); alert('Submit error: '+t); return false; }
+      }catch(err){ console.error(err); alert('Network error submitting form.'); return false; }
+    }
 
+    async function tryEmailJS(payload){
+      if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return false;
+      try{
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        const r = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, payload);
+        if(r && r.status === 200){ alert('Submitted! Check your email.'); return true; }
+        return false;
+      }catch(e){ console.error(e); alert('EmailJS error.'); return false; }
+    }
 
-function mailtoLink(body){
-const to = 'orders@yourcatering.com'; // TODO: replace with your inbox
-const subject = encodeURIComponent('New Catering Request');
-const b = encodeURIComponent(body);
-return `mailto:${to}?subject=${subject}&body=${b}`;
-}
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(!requiredFilled() || !validateTimes()) return;
+      const obj = serialize();
+      const pretty = prettySummary(obj);
+      openModal(pretty);
 
+      const payload = { ...obj, pretty_summary: pretty, line_summary: lineSummary(obj) };
+      const sendBtn = $('#sendBtn');
+      sendBtn.onclick = async ()=>{
+        // Try direct send via Formspree or EmailJS. If not configured, fall back to mailto
+        if(await tryFormspree(payload)) return;
+        if(await tryEmailJS(payload)) return;
+        // Fallback to email client with line-by-line formatted body
+        window.location.href = mailtoLink(payload.line_summary);
+      };
+    });
 
-async function tryFormspree(payload){
-if(!FORMSPREE_URL) return false;
-try{
-const res = await fetch(FORMSPREE_URL,{
-method:'POST',
-headers:{'Accept':'application/json','Content-Type':'application/json'},
-body: JSON.stringify(payload)
-});
-if(res.ok){ alert('Submitted! We\'ll be in touch shortly.'); return true; }
-else{ const t = await res.text(); alert('Submit error: '+t); return false; }
-}catch(err){ console.error(err); alert('Network error submitting form.'); return false; }
-}
+    $('#copyBtn').addEventListener('click', ()=>{
+      if(!requiredFilled()) return;
+      const summary = prettySummary(serialize());
+      navigator.clipboard.writeText(summary).then(()=> alert('Summary copied.'));
+    });
 
-
-async function tryEmailJS(payload){
-if(!(window.emailjs && EMAILJS_PUBLIC_KEY && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID)) return false;
-try{
-emailjs.init(EMAILJS_PUBLIC_KEY);
-const r = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, payload);
-if(r && r.status === 200){ alert('Submitted! Check your email.'); return true; }
-return false;
-}catch(e){ console.error(e); alert('EmailJS error.'); return false; }
-}
-
-
-form.addEventListener('submit', async (e)=>{
-e.preventDefault();
-if(!requiredFilled() || !validateTimes()) return;
-const obj = serialize();
-const pretty = prettySummary(obj);
-openModal(pretty);
-
-
-const payload = { ...obj, pretty_summary: pretty, line_summary: lineSummary(obj) };
-const sendBtn = $('#sendBtn');
-sendBtn.onclick = async ()=>{
-// Try direct send via Formspree or EmailJS. If not configured, fall back to mailto
-if(await tryFormspree(payload)) return;
-if(await tryEmailJS(payload)) return;
-// Fallback to email client with line-by-line formatted body
-window.location.href = mailtoLink(payload.line_summary);
-};
-});
-
-
-$('#copyBtn').addEventListener('click', ()=>{
-if(!requiredFilled()) return;
-const summary = prettySummary(serialize());
-navigator.clipboard.writeText(summary).then(()=> alert('Summary copied.'));
-});
-
-
-$('#printBtn').addEventListener('click', ()=> window.print());
-</script>
+    $('#printBtn').addEventListener('click', ()=> window.print());
+  </script>
 </body>
 </html>
