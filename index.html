@@ -31,18 +31,34 @@
     @media(min-width:760px){form{grid-template-columns:repeat(12,1fr)} .span-12{grid-column:span 12}}
     fieldset{border:1px solid var(--border);border-radius:14px;padding:14px;margin:0}
     legend{padding:0 8px;color:var(--muted);font-size:.95rem}
-    label{display:block;color:var(--ink);font-weight:650;margin-bottom:6px}
+    label{display:block;color:var(--ink);font-weight:600;margin-bottom:6px}
 
     .row{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
 
-    input,textarea,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--ink);font-size:16px}
+    /* form inputs (text-like only) */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    textarea,
+    select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--ink);
+      font-size:16px;
+    }
     textarea{min-height:110px;resize:vertical}
 
-    /* Compact option pills for checkboxes / radios */
-    .choices{display:flex;flex-wrap:wrap;gap:8px 12px;margin:6px 0 2px}
-    .choice{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;user-select:none}
-    .choice input{margin:0;accent-color:var(--accent)}
+    /* compact checkbox / radio chips */
+    .choices{display:flex;flex-wrap:wrap;gap:8px 10px;margin:6px 0 2px}
+    .choice{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;user-select:none;line-height:1}
+    .choice input{width:18px;height:18px;flex:0 0 auto;margin:0;accent-color:var(--accent)}
 
     .actions{display:grid;grid-template-columns:1fr;gap:10px}
     @media(min-width:560px){.actions{grid-template-columns:auto auto auto auto}}
@@ -117,26 +133,26 @@
           <legend>Meal Preferences</legend>
           <label class="required">Type of Service (select all that apply)</label>
           <div class="choices" role="group" aria-label="Meal types">
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Breakfast"> Breakfast</label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Lunch"> Lunch</label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Snacks"> Snacks</label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Appetizers"> Appetizers</label>
-            <label class="choice"><input type="checkbox" name="mealTypes" value="Dinner"> Dinner</label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Breakfast"><span>Breakfast</span></label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Lunch"><span>Lunch</span></label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Snacks"><span>Snacks</span></label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Appetizers"><span>Appetizers</span></label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Dinner"><span>Dinner</span></label>
           </div>
           <div class="row" style="margin-top:8px">
             <div>
               <label class="required">Menu Preference</label>
               <div class="choices" role="radiogroup" aria-label="Menu">
-                <label class="choice"><input type="radio" name="menuPref" value="Preferred Menu" required> Preferred Menu</label>
-                <label class="choice"><input type="radio" name="menuPref" value="Open to Suggestions" required> Open to Suggestions</label>
+                <label class="choice"><input type="radio" name="menuPref" value="Preferred Menu" required><span>Preferred Menu</span></label>
+                <label class="choice"><input type="radio" name="menuPref" value="Open to Suggestions" required><span>Open to Suggestions</span></label>
               </div>
               <textarea id="menuNotes" name="menuNotes" placeholder="Dietary preferences, cuisine ideas, must-haves" style="margin-top:8px"></textarea>
             </div>
             <div>
               <label class="required">Catering Type</label>
               <div class="choices" role="radiogroup" aria-label="Catering type">
-                <label class="choice"><input type="radio" name="cateringType" value="Regular" required> Regular</label>
-                <label class="choice"><input type="radio" name="cateringType" value="VIP" required> VIP</label>
+                <label class="choice"><input type="radio" name="cateringType" value="Regular" required><span>Regular</span></label>
+                <label class="choice"><input type="radio" name="cateringType" value="VIP" required><span>VIP</span></label>
               </div>
             </div>
           </div>
@@ -149,7 +165,7 @@
             <div><label for="totalBudget">Total Budget (USD)</label><input id="totalBudget" name="totalBudget" type="number" min="0" step="0.01"></div>
           </div>
           <div class="row">
-            <div><label class="choice"><input type="checkbox" id="rush" name="rush"> Last-Minute Event (within 48 hrs) — $200 rush fee</label></div>
+            <div><label class="choice" style="padding:8px 10px"><input type="checkbox" id="rush" name="rush"><span>Last-Minute Event (within 48 hrs) — $200 rush fee</span></label></div>
           </div>
           <div class="row">
             <div class="summary" style="border:1px dashed var(--border);border-radius:12px;padding:12px;background:#fff">
@@ -194,9 +210,7 @@
   <script>
     const $ = s => document.querySelector(s);
     const $$ = s => [...document.querySelectorAll(s)];
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    $('#year').textContent = yyyy;
+    $('#year').textContent = new Date().getFullYear();
     $('#eventDate').setAttribute('min', new Date().toISOString().split('T')[0]);
 
     const form = $('#cateringForm');
