@@ -17,7 +17,7 @@
       --success:#10b981;
     }
     *{box-sizing:border-box}
-    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);}
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);}    
     .container{max-width:980px;margin:0 auto;padding:20px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 30px rgba(31,41,55,.08);overflow:hidden}
     header.hero{padding:20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr;gap:12px}
@@ -26,15 +26,24 @@
     .logo{width:44px;height:44px;border-radius:12px;background:conic-gradient(from 210deg, var(--accent), var(--accent-2));opacity:.9}
     h1{color:var(--ink);margin:0;font-size:1.35rem}
     .sub{color:var(--muted);font-size:.95rem}
+
     form{padding:20px;display:grid;grid-template-columns:1fr;gap:16px}
     @media(min-width:760px){form{grid-template-columns:repeat(12,1fr)} .span-12{grid-column:span 12}}
     fieldset{border:1px solid var(--border);border-radius:14px;padding:14px;margin:0}
     legend{padding:0 8px;color:var(--muted);font-size:.95rem}
     label{display:block;color:var(--ink);font-weight:650;margin-bottom:6px}
+
     .row{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
-    input,textarea,select{width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--ink);font-size:16px}
+
+    input,textarea,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--ink);font-size:16px}
     textarea{min-height:110px;resize:vertical}
+
+    /* Compact option pills for checkboxes / radios */
+    .choices{display:flex;flex-wrap:wrap;gap:8px 12px;margin:6px 0 2px}
+    .choice{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;user-select:none}
+    .choice input{margin:0;accent-color:var(--accent)}
+
     .actions{display:grid;grid-template-columns:1fr;gap:10px}
     @media(min-width:560px){.actions{grid-template-columns:auto auto auto auto}}
     button{border:none;border-radius:12px;padding:12px 16px;font-weight:750;cursor:pointer;font-size:16px}
@@ -42,6 +51,7 @@
     .ghost{background:#fff;color:var(--ink);border:1px solid var(--border)}
     .danger{background:var(--danger);color:white}
     .footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
+
     dialog{border:none;border-radius:16px;background:#fff;color:var(--ink);width:min(720px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.18)}
     dialog::backdrop{background:rgba(0,0,0,.35)}
     .modal-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:14px 16px}
@@ -62,7 +72,7 @@
             <div class="sub">Looks great on desktop and phone. We’ll follow up with a custom proposal.</div>
           </div>
         </div>
-        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent);text-decoration:none">(000) 000‑0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent);text-decoration:none">orders@yourcatering.com</a></div>
+        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent);text-decoration:none">(000) 000-0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent);text-decoration:none">orders@yourcatering.com</a></div>
       </header>
 
       <form id="cateringForm" novalidate>
@@ -106,22 +116,28 @@
         <fieldset class="span-12">
           <legend>Meal Preferences</legend>
           <label class="required">Type of Service (select all that apply)</label>
-          <div class="row">
-            <div><input type="checkbox" name="mealTypes" value="Breakfast"> Breakfast</div>
-            <div><input type="checkbox" name="mealTypes" value="Lunch"> Lunch</div>
-            <div><input type="checkbox" name="mealTypes" value="Snacks"> Snacks</div>
-            <div><input type="checkbox" name="mealTypes" value="Appetizers"> Appetizers</div>
-            <div><input type="checkbox" name="mealTypes" value="Dinner"> Dinner</div>
+          <div class="choices" role="group" aria-label="Meal types">
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Breakfast"> Breakfast</label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Lunch"> Lunch</label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Snacks"> Snacks</label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Appetizers"> Appetizers</label>
+            <label class="choice"><input type="checkbox" name="mealTypes" value="Dinner"> Dinner</label>
           </div>
-          <div class="row">
-            <div><label class="required">Menu Preference</label>
-              <input type="radio" name="menuPref" value="Preferred Menu" required> Preferred Menu
-              <input type="radio" name="menuPref" value="Open to Suggestions" required> Open to Suggestions
-              <textarea id="menuNotes" name="menuNotes" placeholder="Dietary preferences, cuisine ideas, must‑haves"></textarea>
+          <div class="row" style="margin-top:8px">
+            <div>
+              <label class="required">Menu Preference</label>
+              <div class="choices" role="radiogroup" aria-label="Menu">
+                <label class="choice"><input type="radio" name="menuPref" value="Preferred Menu" required> Preferred Menu</label>
+                <label class="choice"><input type="radio" name="menuPref" value="Open to Suggestions" required> Open to Suggestions</label>
+              </div>
+              <textarea id="menuNotes" name="menuNotes" placeholder="Dietary preferences, cuisine ideas, must-haves" style="margin-top:8px"></textarea>
             </div>
-            <div><label class="required">Catering Type</label>
-              <input type="radio" name="cateringType" value="Regular" required> Regular
-              <input type="radio" name="cateringType" value="VIP" required> VIP
+            <div>
+              <label class="required">Catering Type</label>
+              <div class="choices" role="radiogroup" aria-label="Catering type">
+                <label class="choice"><input type="radio" name="cateringType" value="Regular" required> Regular</label>
+                <label class="choice"><input type="radio" name="cateringType" value="VIP" required> VIP</label>
+              </div>
             </div>
           </div>
         </fieldset>
@@ -133,7 +149,18 @@
             <div><label for="totalBudget">Total Budget (USD)</label><input id="totalBudget" name="totalBudget" type="number" min="0" step="0.01"></div>
           </div>
           <div class="row">
-            <div><label><input type="checkbox" id="rush" name="rush"> Last‑Minute Event (within 48 hrs) — $200 rush fee</label></div>
+            <div><label class="choice"><input type="checkbox" id="rush" name="rush"> Last-Minute Event (within 48 hrs) — $200 rush fee</label></div>
+          </div>
+          <div class="row">
+            <div class="summary" style="border:1px dashed var(--border);border-radius:12px;padding:12px;background:#fff">
+              <strong>Live Estimate</strong>
+              <div id="estimateLines" style="margin-top:6px">
+                <div>Guests × Per-person: <strong id="calcBase">—</strong></div>
+                <div>Rush Fee: <strong id="calcRush">—</strong></div>
+                <div style="margin-top:6px">Estimated Total: <strong id="calcTotal">—</strong></div>
+              </div>
+              <div class="sub" style="margin-top:6px">For guidance only. Final quote follows review.</div>
+            </div>
           </div>
         </fieldset>
 
@@ -173,19 +200,178 @@
     $('#eventDate').setAttribute('min', new Date().toISOString().split('T')[0]);
 
     const form = $('#cateringForm');
-    function money(n){return isNaN(n)?'—':n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0})}
-    function serialize(){const d=new FormData(form);return Object.fromEntries(d.entries())}
-    function requiredFilled(){const r=['name','email','phone','eventDate','location','startTime','endTime','guests','serviceStyle','budgetPer'];for(const id of r){if(!$('#'+id).value){alert('Missing '+id);return false}}if(!$$('input[name="mealTypes"]:checked').length){alert('Select at least one meal type.');return false}if(!document.querySelector('input[name="menuPref"]:checked')){alert('Select a menu preference.');return false}if(!document.querySelector('input[name="cateringType"]:checked')){alert('Select a catering type.');return false}return true}
-    function pretty(o){return JSON.stringify(o,null,2)}
-    function buildBody(o){return Object.entries(o).map(([k,v])=>`${k}: ${v}`).join('\n')}
-    function openModal(t){$('#previewText').textContent=t;$('#previewModal').showModal()}
-    function closeModal(){$('#previewModal').close()}
-    function copySummary(){navigator.clipboard.writeText($('#previewText').textContent)}
-    function mailtoLink(body){return `mailto:orders@yourcatering.com?subject=${encodeURIComponent('New Catering Request')}&body=${encodeURIComponent(body)}`}
+    const rush = $('#rush');
+    const guests = $('#guests');
+    const budgetPer = $('#budgetPer');
+    const totalBudget = $('#totalBudget');
+    const calcBase = $('#calcBase');
+    const calcRush = $('#calcRush');
+    const calcTotal = $('#calcTotal');
 
-    form.addEventListener('submit',e=>{e.preventDefault();if(!requiredFilled())return;const o=serialize();openModal(buildBody(o));$('#sendBtn').onclick=()=>window.location.href=mailtoLink(buildBody(o))})
-    $('#copyBtn').addEventListener('click',()=>{if(!requiredFilled())return;copySummary()});
-    $('#printBtn').addEventListener('click',()=>window.print());
+    const money = n => (isNaN(n) || !isFinite(n)) ? '—' : n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0});
+    function estimate(){
+      const g = parseInt(guests.value,10) || 0;
+      const per = parseFloat(budgetPer.value) || 0;
+      const base = g * per;
+      const rushFee = rush.checked ? 200 : 0;
+      const total = (totalBudget.value ? parseFloat(totalBudget.value) : base) + rushFee;
+      calcBase.textContent = base ? money(base) : '—';
+      calcRush.textContent = rushFee ? money(rushFee) : '$0';
+      calcTotal.textContent = total ? money(total) : '—';
+    }
+    ['input','change'].forEach(ev=>[guests,budgetPer,totalBudget,rush].forEach(el=>el.addEventListener(ev,estimate)));
+    estimate();
+
+    function serialize(){
+      const d = new FormData(form);
+      const mealTypes = $$('input[name="mealTypes"]:checked').map(x=>x.value);
+      const menuPref = document.querySelector('input[name="menuPref"]:checked')?.value || '';
+      const cateringType = document.querySelector('input[name="cateringType"]:checked')?.value || '';
+      return {
+        name: d.get('name'),
+        email: d.get('email'),
+        phone: d.get('phone'),
+        company: d.get('company')||'',
+        costCenter: d.get('costCenter')||'',
+        eventDate: d.get('eventDate'),
+        location: d.get('location'),
+        startTime: d.get('startTime'),
+        endTime: d.get('endTime'),
+        guests: d.get('guests'),
+        serviceStyle: d.get('serviceStyle'),
+        mealTypes,
+        menuPref,
+        menuNotes: d.get('menuNotes')||'',
+        cateringType,
+        budgetPer: d.get('budgetPer'),
+        totalBudget: d.get('totalBudget')||'',
+        rush: !!d.get('rush'),
+        notes: d.get('notes')||''
+      };
+    }
+
+    function requiredFilled(){
+      const req = ['name','email','phone','eventDate','location','startTime','endTime','guests','serviceStyle','budgetPer'];
+      for(const id of req){ if(!document.getElementById(id).value){ alert('Missing '+id); return false; } }
+      if($$('input[name="mealTypes"]:checked').length===0){ alert('Select at least one meal type.'); return false; }
+      if(!document.querySelector('input[name="menuPref"]:checked')){ alert('Select a menu preference.'); return false; }
+      if(!document.querySelector('input[name="cateringType"]:checked')){ alert('Select a catering type.'); return false; }
+      return true;
+    }
+
+    function pretty(o){
+      const base = (parseInt(o.guests||0,10) * parseFloat(o.budgetPer||0))||0;
+      const rushFee = o.rush ? 200 : 0;
+      const estTotal = (o.totalBudget? parseFloat(o.totalBudget): base) + rushFee;
+      const list = a => a && a.length ? a.join(', ') : '(none)';
+      return (
+`CATERING REQUEST
+
+`+
+`CONTACT
+  Name: ${o.name}
+  Email: ${o.email}
+  Phone: ${o.phone}
+  Company: ${o.company||'(n/a)'}
+  Cost Center: ${o.costCenter||'(n/a)'}
+
+`+
+`EVENT
+  Date: ${o.eventDate}
+  Location: ${o.location}
+  Start: ${o.startTime}
+  End: ${o.endTime}
+  Guests: ${o.guests}
+  Service Style: ${o.serviceStyle}
+
+`+
+`MEALS
+  Types: ${list(o.mealTypes)}
+  Menu Preference: ${o.menuPref}
+  Menu Notes: ${o.menuNotes || '(none)'}
+  Catering Type: ${o.cateringType}
+
+`+
+`BUDGET
+  Per Person: $${Number(o.budgetPer||0).toFixed(2)}
+  Total Budget: ${o.totalBudget? `$${Number(o.totalBudget).toFixed(2)}`:'(not specified)'}
+  Rush (48h): ${o.rush?'Yes':'No'}
+
+`+
+`ESTIMATE
+  Guests × Per-person: $${base.toFixed(2)}
+  Rush Fee: $${rushFee.toFixed(2)}
+  Estimated Total: $${estTotal.toFixed(2)}
+
+`+
+`NOTES
+  ${o.notes || '(none)'}
+
+— Submitted via website`
+      );
+    }
+
+    function bodyText(o){
+      const base = (parseInt(o.guests||0,10) * parseFloat(o.budgetPer||0))||0;
+      const rushFee = o.rush ? 200 : 0;
+      const estTotal = (o.totalBudget? parseFloat(o.totalBudget): base) + rushFee;
+      const lines = [
+        'CATERING REQUEST','',
+        '[CONTACT]',
+        `Name: ${o.name}`,
+        `Email: ${o.email}`,
+        `Phone: ${o.phone}`,
+        `Company: ${o.company || '(n/a)'}`,
+        `Cost Center: ${o.costCenter || '(n/a)'}`,
+        '',
+        '[EVENT]',
+        `Date: ${o.eventDate}`,
+        `Location: ${o.location}`,
+        `Start: ${o.startTime}`,
+        `End: ${o.endTime}`,
+        `Guests: ${o.guests}`,
+        `Service Style: ${o.serviceStyle}`,
+        '',
+        '[MEALS]',
+        `Types: ${o.mealTypes && o.mealTypes.length? o.mealTypes.join(', ') : '(none)'}`,
+        `Menu Preference: ${o.menuPref}`,
+        `Menu Notes: ${o.menuNotes || '(none)'}`,
+        `Catering Type: ${o.cateringType}`,
+        '',
+        '[BUDGET]',
+        `Per Person: $${Number(o.budgetPer||0).toFixed(2)}`,
+        `Total Budget: ${o.totalBudget? `$${Number(o.totalBudget).toFixed(2)}` : '(not specified)'}`,
+        `Rush (48h): ${o.rush? 'Yes (+$200)' : 'No'}`,
+        '',
+        '[ESTIMATE]',
+        `Guests × Per-person: $${base.toFixed(2)}`,
+        `Rush Fee: $${rushFee.toFixed(2)}`,
+        `Estimated Total: $${estTotal.toFixed(2)}`,
+        '',
+        '[NOTES]',
+        `${o.notes || '(none)'}`,
+        '',
+        '— Submitted via website'
+      ];
+      return lines.join('
+');
+    }
+
+    function openModal(text){ $('#previewText').textContent = text; $('#previewModal').showModal(); }
+    function closeModal(){ $('#previewModal').close(); }
+    function copySummary(){ navigator.clipboard.writeText($('#previewText').textContent); }
+    function mailtoLink(body){ return `mailto:orders@yourcatering.com?subject=${encodeURIComponent('New Catering Request')}&body=${encodeURIComponent(body)}`; }
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(!requiredFilled()) return;
+      const o = serialize();
+      openModal(pretty(o));
+      $('#sendBtn').onclick = ()=> window.location.href = mailtoLink(bodyText(o));
+    });
+
+    $('#copyBtn').addEventListener('click', ()=>{ if(!requiredFilled()) return; copySummary(); });
+    $('#printBtn').addEventListener('click', ()=> window.print());
   </script>
 </body>
 </html>
