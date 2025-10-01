@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Catering Request</title>
+  <title>JPMC Catering & Event Request</title>
   <meta name="description" content="Submit a catering request with event details, menu preferences, and budget." />
   <style>
     :root{
@@ -38,6 +38,11 @@
       .span-4{grid-column:span 4}
       .span-3{grid-column:span 3}
       .span-8{grid-column:span 8}
+      .row{grid-template-columns:1fr 1fr}
+      .actions{flex-direction:row}
+      .actions button{width:auto}
+      .totals{flex-direction:row}
+      .summary{min-width:260px}
     }
 
     fieldset{border:1px solid var(--border);border-radius:14px;padding:16px;margin:0}
@@ -81,6 +86,23 @@
     pre{white-space:pre-wrap;background:#fafbff;border:1px solid var(--border);border-radius:12px;padding:12px}
 
     .required::after{content:" *";color:var(--danger);font-weight:700}
+    
+    /* Mobile-first tweaks */
+    .row{grid-template-columns:1fr}
+    .actions{flex-direction:column}
+    .actions button{width:100%}
+    .container{margin:24px auto}
+    .totals{flex-direction:column}
+    .summary{min-width:100%}
+    
+    /* Desktop overrides placed after mobile-first rules */
+    @media(min-width:700px){
+      .row{grid-template-columns:1fr 1fr}
+      .actions{flex-direction:row}
+      .actions button{width:auto}
+      .totals{flex-direction:row}
+      .summary{min-width:260px}
+    }
   </style>
 </head>
 <body>
@@ -90,7 +112,7 @@
         <div class="brand">
           <div class="logo" aria-hidden="true"></div>
           <div>
-            <h1>Event Catering Request</h1>
+            <h1>JPMC Catering & Event Request</h1>
             <div class="sub">Tell us the basics. We’ll confirm with a custom proposal.</div>
           </div>
         </div>
@@ -146,11 +168,11 @@
           <div class="row">
             <div>
               <label for="startTime" class="required">Start Time</label>
-              <input id="startTime" name="startTime" type="time" required />
+              <input id="startTime" name="startTime" type="time" step="900" required />
             </div>
             <div>
               <label for="endTime" class="required">End Time</label>
-              <input id="endTime" name="endTime" type="time" required />
+              <input id="endTime" name="endTime" type="time" step="900" required />
             </div>
           </div>
           <div class="row">
@@ -315,109 +337,88 @@
     const calcBase = $('#calcBase');
     const calcRush = $('#calcRush');
     const calcTotal = $('#calcTotal');
+    const startTime = document.getElementById('startTime');
+    const endTime = document.getElementById('endTime');
 
     // Restaurants dataset (approved list)
     const approvedRestaurants = [
-      { name: 'Olive Grove Trattoria', cuisine: 'Italian' },
-      { name: 'Spice Route Kitchen', cuisine: 'Indian' },
-      { name: 'Golden Dragon Palace', cuisine: 'Chinese' },
-      { name: 'Casa Verde Cantina', cuisine: 'Mexican' },
-      { name: 'The Rusty Fork Diner', cuisine: 'American' },
-      { name: 'Aegean Breeze Grill', cuisine: 'Mediterranean' },
-      { name: 'Napoli’s Table', cuisine: 'Italian' },
-      { name: 'Curry Leaf House', cuisine: 'Indian' },
-      { name: 'Jade Lotus Bistro', cuisine: 'Chinese' },
-      { name: 'Tacos del Sol', cuisine: 'Mexican' },
-      { name: 'Liberty Grill', cuisine: 'American' },
-      { name: 'Santorini Sun', cuisine: 'Mediterranean' },
-      { name: 'Bella Roma Ristorante', cuisine: 'Italian' },
-      { name: 'Saffron Delight', cuisine: 'Indian' },
-      { name: 'Bamboo Garden', cuisine: 'Chinese' },
-      { name: 'El Toro Loco', cuisine: 'Mexican' },
-      { name: 'Bluegrass BBQ Shack', cuisine: 'American' },
-      { name: 'Olive & Fig Café', cuisine: 'Mediterranean' },
-      { name: 'Vesuvio’s Pizza', cuisine: 'Italian' },
-      { name: 'Maharaja Feast', cuisine: 'Indian' },
-      { name: 'Red Panda Wok', cuisine: 'Chinese' },
-      { name: 'Fiesta Ranch', cuisine: 'Mexican' },
-      { name: 'Route 66 Diner', cuisine: 'American' },
-      { name: 'Athena’s Kitchen', cuisine: 'Mediterranean' },
-      { name: 'Trattoria Milano', cuisine: 'Italian' },
-      { name: 'Peacock Spice', cuisine: 'Indian' },
-      { name: 'Dragon Pearl Eatery', cuisine: 'Chinese' },
-      { name: 'Cantina Azul', cuisine: 'Mexican' },
-      { name: 'Big Joe’s Burgers', cuisine: 'American' },
-      { name: 'Mykonos Flame', cuisine: 'Mediterranean' },
-      { name: 'La Dolce Vita', cuisine: 'Italian' },
-      { name: 'Masala Junction', cuisine: 'Indian' },
-      { name: 'Golden Wok Express', cuisine: 'Chinese' },
-      { name: 'Burrito Brothers', cuisine: 'Mexican' },
-      { name: 'Timberline Grill', cuisine: 'American' },
-      { name: 'Olive Branch Mezze', cuisine: 'Mediterranean' },
-      { name: 'Roma Bistro', cuisine: 'Italian' },
-      { name: 'Tandoori Nights', cuisine: 'Indian' },
-      { name: 'Lotus Blossom Café', cuisine: 'Chinese' },
-      { name: 'Casa Fiesta', cuisine: 'Mexican' },
-      { name: 'Main Street Café', cuisine: 'American' },
-      { name: 'Delphi Taverna', cuisine: 'Mediterranean' },
-      { name: 'Amalfi Coast Kitchen', cuisine: 'Italian' },
-      { name: 'Kerala Spice House', cuisine: 'Indian' },
-      { name: 'Jade Garden', cuisine: 'Chinese' },
-      { name: 'Sombrero’s', cuisine: 'Mexican' },
-      { name: 'Eagle’s Nest Grill', cuisine: 'American' },
-      { name: 'Mediterranean Oasis', cuisine: 'Mediterranean' },
-      { name: 'Firenze Pasta Bar', cuisine: 'Italian' },
-      { name: 'Bollywood Masala', cuisine: 'Indian' },
-      { name: 'Panda Pavilion', cuisine: 'Chinese' },
-      { name: 'Viva Mexico Cantina', cuisine: 'Mexican' },
-      { name: 'Patriot’s Steakhouse', cuisine: 'American' },
-      { name: 'Crete’s Delight', cuisine: 'Mediterranean' },
-      { name: 'Verona’s Oven', cuisine: 'Italian' },
-      { name: 'Spice Bazaar', cuisine: 'Indian' },
-      { name: 'Red Dragon House', cuisine: 'Chinese' },
-      { name: 'Taco Time Grill', cuisine: 'Mexican' },
-      { name: 'Stars & Stripes Café', cuisine: 'American' },
-      { name: 'Olympia Breeze', cuisine: 'Mediterranean' },
-      { name: 'Capri Cucina', cuisine: 'Italian' },
-      { name: 'Curry Kingdom', cuisine: 'Indian' },
-      { name: 'Dragonfly Noodles', cuisine: 'Chinese' },
-      { name: 'Guadalajara Grill', cuisine: 'Mexican' },
-      { name: 'Harbor House Grill', cuisine: 'American' },
-      { name: 'Nile’s Edge', cuisine: 'Mediterranean' },
-      { name: 'Toscana Pizza Co.', cuisine: 'Italian' },
-      { name: 'Taj Mahal Curry', cuisine: 'Indian' },
-      { name: 'Lotus Leaf Kitchen', cuisine: 'Chinese' },
-      { name: 'El Mariachi’s', cuisine: 'Mexican' },
-      { name: 'Yankee Kitchen', cuisine: 'American' },
-      { name: 'Athens Mezze Bar', cuisine: 'Mediterranean' },
-      { name: 'Roman Holiday Eatery', cuisine: 'Italian' },
-      { name: 'Masala Express', cuisine: 'Indian' },
-      { name: 'Wok ‘n’ Roll', cuisine: 'Chinese' },
-      { name: 'La Hacienda', cuisine: 'Mexican' },
-      { name: 'Old Glory Café', cuisine: 'American' },
-      { name: 'Levantine Flame', cuisine: 'Mediterranean' },
-      { name: 'Pompeii Ristorante', cuisine: 'Italian' },
-      { name: 'Spice Symphony', cuisine: 'Indian' },
-      { name: 'Golden Chopsticks', cuisine: 'Chinese' },
-      { name: 'Baja Breeze', cuisine: 'Mexican' },
-      { name: 'Liberty Tavern', cuisine: 'American' },
-      { name: 'The Greek Table', cuisine: 'Mediterranean' },
-      { name: 'Bella Napoli', cuisine: 'Italian' },
-      { name: 'Bombay Curry Café', cuisine: 'Indian' },
-      { name: 'Dragon Gate', cuisine: 'Chinese' },
-      { name: 'Sombrero Fiesta', cuisine: 'Mexican' },
-      { name: 'Iron Horse Grill', cuisine: 'American' },
-      { name: 'Acropolis Kitchen', cuisine: 'Mediterranean' },
-      { name: 'Siena’s Bistro', cuisine: 'Italian' },
-      { name: 'Royal Masala', cuisine: 'Indian' },
-      { name: 'Lantern House', cuisine: 'Chinese' },
-      { name: 'Viva la Salsa', cuisine: 'Mexican' },
-      { name: 'Pioneer BBQ House', cuisine: 'American' },
-      { name: 'Mediterranean Moon', cuisine: 'Mediterranean' },
-      { name: 'Trattoria Venezia', cuisine: 'Italian' },
-      { name: 'Curry Caravan', cuisine: 'Indian' },
-      { name: 'Jade Emperor Palace', cuisine: 'Chinese' },
-      { name: 'Taco Amigos', cuisine: 'Mexican' }
+      { name: "Aina's Vegan", cuisine: 'Vietnamese' },
+      { name: 'Alamar', cuisine: 'Seafood' },
+      { name: 'Arepas', cuisine: 'Latin American' },
+      { name: 'Aroma House', cuisine: 'Indian' },
+      { name: 'Bayshore Taqueria', cuisine: 'Mexican' },
+      { name: 'Beyond the Border', cuisine: 'Latin American' },
+      { name: 'Bistro Bites', cuisine: 'Vietnamese/French' },
+      { name: 'Bonchon - Blossom Hill Rd', cuisine: 'Korean/Fried Chicken' },
+      { name: 'Bravo! House of Enchiladas', cuisine: 'Mexican' },
+      { name: 'Bun Me Up', cuisine: 'Chinese/Breakfast' },
+      { name: 'Buri Buri Bento', cuisine: 'Japanese' },
+      { name: 'Burma Classic - San Francisco', cuisine: 'Burmese' },
+      { name: "C'era Una Volta", cuisine: 'Italian' },
+      { name: "Chef Jimmy's Catering", cuisine: 'Mediterranean' },
+      { name: 'Experience Burma', cuisine: 'Burmese' },
+      { name: 'Flambé', cuisine: 'Asian' },
+      { name: 'Flaming Ox', cuisine: 'Taiwanese' },
+      { name: 'Ginza Eats', cuisine: 'Poke' },
+      { name: 'Gyro Xpress', cuisine: 'Mediterranean' },
+      { name: "Hana's Cafe", cuisine: 'American/Salad/Deli/Mexican' },
+      { name: 'Himalayan Chef & Kitchen', cuisine: 'Indian' },
+      { name: 'Hongry Kong', cuisine: 'Chinese' },
+      { name: 'I Love Cheesesteak', cuisine: 'American' },
+      { name: 'Jalsa Catering & Events', cuisine: 'Indian' },
+      { name: 'Japafood', cuisine: 'Japanese' },
+      { name: "Kawashima's Kitchen", cuisine: 'Japanese' },
+      { name: 'Koja Kitchen - Dublin', cuisine: 'Korean' },
+      { name: 'Koja Kitchen - Fremont', cuisine: 'Korean' },
+      { name: 'Koja-Viet Delight', cuisine: 'Vietnamese' },
+      { name: 'L.B. Taqueria', cuisine: 'Mexican' },
+      { name: "Liang's Village", cuisine: 'Taiwanese' },
+      { name: 'Lima Peruvian Food', cuisine: 'Peruvian' },
+      { name: 'Little Green Cyclo', cuisine: 'Vietnamese' },
+      { name: 'Locali Mediterranean', cuisine: 'Mediterranean' },
+      { name: 'Loving Hut', cuisine: 'Vegan' },
+      { name: "Max's of Manila - South SF", cuisine: 'Filipino' },
+      { name: 'Mint Leaf', cuisine: 'Vietnamese' },
+      { name: 'Miss Subi', cuisine: 'Asian' },
+      { name: 'Momo & Kebab', cuisine: 'Indian' },
+      { name: "Nina's Taqueria", cuisine: 'Mexican' },
+      { name: 'Noor Indian Fusion Kitchen - Oakland', cuisine: 'Indian' },
+      { name: 'Papas & Eggs', cuisine: 'Breakfast' },
+      { name: "Pia's Thai Kitchen", cuisine: 'Thai' },
+      { name: 'Picnic Basket', cuisine: 'Poke/Deli' },
+      { name: 'Proposition Chicken (OAK)', cuisine: 'American' },
+      { name: 'Proposition Chicken (SF)', cuisine: 'American' },
+      { name: 'Pushcart Fare', cuisine: 'Chinese' },
+      { name: 'Red Chillies', cuisine: 'Indian' },
+      { name: "Romano's Macaroni Grill", cuisine: 'Italian' },
+      { name: 'Sajj Mediterranean - San Mateo', cuisine: 'Mediterranean' },
+      { name: 'Salsa Picante - Fremont', cuisine: 'Mexican' },
+      { name: 'SB Catering & Events', cuisine: 'Mexican/Asian' },
+      { name: 'Seoul Eats', cuisine: 'Korean' },
+      { name: 'Smoked Out BBQ', cuisine: 'Barbecue' },
+      { name: "SSB Catering (Achiote Grill)", cuisine: 'Cuban/Jamaican' },
+      { name: "SSB Catering (Breakfast Bistro)", cuisine: 'Breakfast' },
+      { name: "SSB Catering (Graziano's)", cuisine: 'Italian' },
+      { name: "SSB Catering (Lunchly)", cuisine: 'American' },
+      { name: "SSB Catering (Shoyu)", cuisine: 'Asian' },
+      { name: 'Straw Hat Pizza', cuisine: 'Pizza' },
+      { name: 'Sugo', cuisine: 'Italian' },
+      { name: 'Superfine Kitchen', cuisine: 'Salad/Deli/Japanese/Indian/Mexican/Breakfast' },
+      { name: 'Sweet Fingers', cuisine: 'Jamaican' },
+      { name: 'Tannourine', cuisine: 'Mediterranean' },
+      { name: 'The Gurkha Kitchen - Hayward', cuisine: 'Indian' },
+      { name: 'The Gurkha Kitchen - Sunnyvale', cuisine: 'Indian' },
+      { name: 'The Kebab Guys', cuisine: 'Mediterranean' },
+      { name: 'The Lightbox Café', cuisine: 'Deli' },
+      { name: 'The Oaxacan Kitchen', cuisine: 'Mexican' },
+      { name: 'The Waffle Roost', cuisine: 'American' },
+      { name: 'Todos', cuisine: 'Mexican' },
+      { name: 'Two Fish', cuisine: 'Poke/Bento' },
+      { name: 'Underdogs Cantina', cuisine: 'Mexican' },
+      { name: 'Urban Kitchen', cuisine: 'Salad' },
+      { name: 'Voyager Foods', cuisine: 'American' },
+      { name: 'WoKitchen', cuisine: 'Chinese' },
+      { name: 'Yakitori Harue', cuisine: 'Japanese' }
     ];
 
     // Restaurant selector elements
@@ -481,6 +482,52 @@
       [guests,budgetPer,totalBudget,rush].forEach(el=>el.addEventListener(ev,estimate));
     });
     estimate();
+
+    // Time helpers for 15-min rounding and defaulting end time
+    function toMinutes(t){
+      const [hh, mm] = (t || '00:00').split(':').map(x=>parseInt(x,10)||0);
+      return hh*60 + mm;
+    }
+    function toTimeStr(m){
+      const hh = Math.floor((m% (24*60))/60);
+      const mm = m % 60;
+      const pad2 = n => String(n).padStart(2,'0');
+      return `${pad2(hh)}:${pad2(mm)}`;
+    }
+    function roundTo15(t){
+      const m = toMinutes(t);
+      const rounded = Math.round(m / 15) * 15;
+      return toTimeStr(rounded);
+    }
+    function clampEndAfterStart(){
+      if(!startTime || !endTime) return;
+      const s = startTime.value;
+      if(!s) return;
+      // If end is empty or earlier/equal, set to +60 mins from start, rounded to 15
+      const sMin = toMinutes(s);
+      const eMin = toMinutes(endTime.value || '');
+      if(!endTime.dataset.userChanged || eMin <= sMin){
+        const next = sMin + 60;
+        endTime.value = roundTo15(toTimeStr(next));
+        endTime.dataset.userChanged = '';
+      }
+    }
+
+    if(startTime && endTime){
+      // On load, round start and set default end
+      if(startTime.value) startTime.value = roundTo15(startTime.value);
+      clampEndAfterStart();
+      startTime.addEventListener('change', ()=>{
+        // Round to 15 and adjust end
+        startTime.value = roundTo15(startTime.value);
+        clampEndAfterStart();
+      });
+      endTime.addEventListener('change', ()=>{
+        // User manually changed end time
+        endTime.value = roundTo15(endTime.value);
+        endTime.dataset.userChanged = '1';
+      });
+    }
 
     function serialize(){
       const data = new FormData(form);
