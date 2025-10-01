@@ -94,6 +94,12 @@
     .container{margin:24px auto}
     .totals{flex-direction:column}
     .summary{min-width:100%}
+    .restaurant-list{max-height:260px;overflow:auto;border:1px solid var(--border);border-radius:10px;background:#fff}
+    .restaurant-item{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:12px;cursor:pointer}
+    .restaurant-item:last-child{border-bottom:none}
+    .restaurant-item[aria-selected="true"]{background:rgba(111,92,241,.08);outline:2px solid rgba(111,92,241,.25)}
+    .restaurant-name{color:var(--text);font-weight:600}
+    .restaurant-cuisine{color:var(--muted);font-size:.9rem}
     
     /* Desktop overrides placed after mobile-first rules */
     @media(min-width:700px){
@@ -237,9 +243,11 @@
                 </div>
               </div>
               <div style="margin-top:10px">
-                <label for="restaurantSelect">Select Restaurant</label>
-                <select id="restaurantSelect" name="restaurant" size="6" style="width:100%"></select>
-                <div class="hint">List shows "Name — Cuisine". Use search and filter above.</div>
+                <label>Select Restaurant</label>
+                <div id="restaurantList" class="restaurant-list" role="listbox" aria-label="Approved Restaurants"></div>
+                <input type="hidden" id="restaurantValue" name="restaurant" />
+                <input type="hidden" id="restaurantCuisineValue" name="restaurantCuisine" />
+                <div class="hint">Tap to select. Use search and filter above.</div>
               </div>
             </fieldset>
           </div>
@@ -424,7 +432,9 @@
     // Restaurant selector elements
     const restaurantSearch = document.getElementById('restaurantSearch');
     const cuisineFilter = document.getElementById('cuisineFilter');
-    const restaurantSelect = document.getElementById('restaurantSelect');
+    const restaurantList = document.getElementById('restaurantList');
+    const restaurantValue = document.getElementById('restaurantValue');
+    const restaurantCuisineValue = document.getElementById('restaurantCuisineValue');
 
     function populateCuisineFilter(){
       const cuisines = Array.from(new Set(approvedRestaurants.map(r=>r.cuisine))).sort();
@@ -439,27 +449,44 @@
     function renderRestaurantOptions(){
       const term = (restaurantSearch?.value || '').toLowerCase().trim();
       const cuisine = cuisineFilter?.value || '';
-      restaurantSelect.innerHTML = '';
-      approvedRestaurants
+      restaurantList.innerHTML = '';
+      const matches = approvedRestaurants
         .filter(r => (!term || r.name.toLowerCase().includes(term)))
-        .filter(r => (!cuisine || r.cuisine === cuisine))
-        .forEach(r=>{
-          const opt = document.createElement('option');
-          opt.value = r.name;
-          opt.textContent = `${r.name} — ${r.cuisine}`;
-          opt.dataset.cuisine = r.cuisine;
-          restaurantSelect.appendChild(opt);
-        });
+        .filter(r => (!cuisine || r.cuisine.toLowerCase().includes(cuisine.toLowerCase())));
+      matches.forEach(r=>{
+        const item = document.createElement('div');
+        item.className = 'restaurant-item';
+        item.setAttribute('role','option');
+        item.setAttribute('tabindex','0');
+        item.dataset.name = r.name;
+        item.dataset.cuisine = r.cuisine;
+        const left = document.createElement('div');
+        left.className = 'restaurant-name';
+        left.textContent = r.name;
+        const right = document.createElement('div');
+        right.className = 'restaurant-cuisine';
+        right.textContent = r.cuisine;
+        item.appendChild(left);
+        item.appendChild(right);
+        item.addEventListener('click', ()=> selectRestaurant(r.name, r.cuisine, item));
+        item.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); selectRestaurant(r.name, r.cuisine, item);} });
+        restaurantList.appendChild(item);
+      });
+    }
+
+    function selectRestaurant(name, cuisine, itemEl){
+      restaurantValue.value = name;
+      restaurantCuisineValue.value = cuisine;
+      [...restaurantList.children].forEach(el=>el.setAttribute('aria-selected','false'));
+      if(itemEl){ itemEl.setAttribute('aria-selected','true'); }
     }
 
     function getSelectedRestaurant(){
-      const opt = restaurantSelect?.selectedOptions?.[0];
-      if(!opt) return { name: '', cuisine: '' };
-      return { name: opt.value, cuisine: opt.dataset.cuisine || '' };
+      return { name: restaurantValue.value || '', cuisine: restaurantCuisineValue.value || '' };
     }
 
     // Initialize restaurant UI
-    if(cuisineFilter && restaurantSelect){
+    if(cuisineFilter && restaurantList){
       populateCuisineFilter();
       renderRestaurantOptions();
       restaurantSearch?.addEventListener('input', renderRestaurantOptions);
