@@ -140,7 +140,7 @@
             </div>
             <div>
               <label for="location" class="required">Location</label>
-              <input id="location" name="location" type="text" placeholder="Building, Floor, Meeting room" required />
+              <input id="location" name="location" type="text" placeholder="Building, Floor No, Meeting room" required />
             </div>
           </div>
           <div class="row">
@@ -196,6 +196,30 @@
                 <label class="chip"><input type="radio" name="cateringType" value="VIP" required> VIP</label>
               </div>
             </div>
+          </div>
+
+          <!-- Approved Restaurants Selector -->
+          <div class="span-12" style="margin-top:14px">
+            <fieldset>
+              <legend>Approved Restaurants</legend>
+              <div class="row">
+                <div>
+                  <label for="restaurantSearch">Search by Name</label>
+                  <input id="restaurantSearch" type="text" placeholder="Start typing a restaurant name" />
+                </div>
+                <div>
+                  <label for="cuisineFilter">Filter by Cuisine</label>
+                  <select id="cuisineFilter">
+                    <option value="">All cuisines</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-top:10px">
+                <label for="restaurantSelect">Select Restaurant</label>
+                <select id="restaurantSelect" name="restaurant" size="6" style="width:100%"></select>
+                <div class="hint">List shows "Name — Cuisine". Use search and filter above.</div>
+              </div>
+            </fieldset>
           </div>
         </fieldset>
 
@@ -292,6 +316,155 @@
     const calcRush = $('#calcRush');
     const calcTotal = $('#calcTotal');
 
+    // Restaurants dataset (approved list)
+    const approvedRestaurants = [
+      { name: 'Olive Grove Trattoria', cuisine: 'Italian' },
+      { name: 'Spice Route Kitchen', cuisine: 'Indian' },
+      { name: 'Golden Dragon Palace', cuisine: 'Chinese' },
+      { name: 'Casa Verde Cantina', cuisine: 'Mexican' },
+      { name: 'The Rusty Fork Diner', cuisine: 'American' },
+      { name: 'Aegean Breeze Grill', cuisine: 'Mediterranean' },
+      { name: 'Napoli’s Table', cuisine: 'Italian' },
+      { name: 'Curry Leaf House', cuisine: 'Indian' },
+      { name: 'Jade Lotus Bistro', cuisine: 'Chinese' },
+      { name: 'Tacos del Sol', cuisine: 'Mexican' },
+      { name: 'Liberty Grill', cuisine: 'American' },
+      { name: 'Santorini Sun', cuisine: 'Mediterranean' },
+      { name: 'Bella Roma Ristorante', cuisine: 'Italian' },
+      { name: 'Saffron Delight', cuisine: 'Indian' },
+      { name: 'Bamboo Garden', cuisine: 'Chinese' },
+      { name: 'El Toro Loco', cuisine: 'Mexican' },
+      { name: 'Bluegrass BBQ Shack', cuisine: 'American' },
+      { name: 'Olive & Fig Café', cuisine: 'Mediterranean' },
+      { name: 'Vesuvio’s Pizza', cuisine: 'Italian' },
+      { name: 'Maharaja Feast', cuisine: 'Indian' },
+      { name: 'Red Panda Wok', cuisine: 'Chinese' },
+      { name: 'Fiesta Ranch', cuisine: 'Mexican' },
+      { name: 'Route 66 Diner', cuisine: 'American' },
+      { name: 'Athena’s Kitchen', cuisine: 'Mediterranean' },
+      { name: 'Trattoria Milano', cuisine: 'Italian' },
+      { name: 'Peacock Spice', cuisine: 'Indian' },
+      { name: 'Dragon Pearl Eatery', cuisine: 'Chinese' },
+      { name: 'Cantina Azul', cuisine: 'Mexican' },
+      { name: 'Big Joe’s Burgers', cuisine: 'American' },
+      { name: 'Mykonos Flame', cuisine: 'Mediterranean' },
+      { name: 'La Dolce Vita', cuisine: 'Italian' },
+      { name: 'Masala Junction', cuisine: 'Indian' },
+      { name: 'Golden Wok Express', cuisine: 'Chinese' },
+      { name: 'Burrito Brothers', cuisine: 'Mexican' },
+      { name: 'Timberline Grill', cuisine: 'American' },
+      { name: 'Olive Branch Mezze', cuisine: 'Mediterranean' },
+      { name: 'Roma Bistro', cuisine: 'Italian' },
+      { name: 'Tandoori Nights', cuisine: 'Indian' },
+      { name: 'Lotus Blossom Café', cuisine: 'Chinese' },
+      { name: 'Casa Fiesta', cuisine: 'Mexican' },
+      { name: 'Main Street Café', cuisine: 'American' },
+      { name: 'Delphi Taverna', cuisine: 'Mediterranean' },
+      { name: 'Amalfi Coast Kitchen', cuisine: 'Italian' },
+      { name: 'Kerala Spice House', cuisine: 'Indian' },
+      { name: 'Jade Garden', cuisine: 'Chinese' },
+      { name: 'Sombrero’s', cuisine: 'Mexican' },
+      { name: 'Eagle’s Nest Grill', cuisine: 'American' },
+      { name: 'Mediterranean Oasis', cuisine: 'Mediterranean' },
+      { name: 'Firenze Pasta Bar', cuisine: 'Italian' },
+      { name: 'Bollywood Masala', cuisine: 'Indian' },
+      { name: 'Panda Pavilion', cuisine: 'Chinese' },
+      { name: 'Viva Mexico Cantina', cuisine: 'Mexican' },
+      { name: 'Patriot’s Steakhouse', cuisine: 'American' },
+      { name: 'Crete’s Delight', cuisine: 'Mediterranean' },
+      { name: 'Verona’s Oven', cuisine: 'Italian' },
+      { name: 'Spice Bazaar', cuisine: 'Indian' },
+      { name: 'Red Dragon House', cuisine: 'Chinese' },
+      { name: 'Taco Time Grill', cuisine: 'Mexican' },
+      { name: 'Stars & Stripes Café', cuisine: 'American' },
+      { name: 'Olympia Breeze', cuisine: 'Mediterranean' },
+      { name: 'Capri Cucina', cuisine: 'Italian' },
+      { name: 'Curry Kingdom', cuisine: 'Indian' },
+      { name: 'Dragonfly Noodles', cuisine: 'Chinese' },
+      { name: 'Guadalajara Grill', cuisine: 'Mexican' },
+      { name: 'Harbor House Grill', cuisine: 'American' },
+      { name: 'Nile’s Edge', cuisine: 'Mediterranean' },
+      { name: 'Toscana Pizza Co.', cuisine: 'Italian' },
+      { name: 'Taj Mahal Curry', cuisine: 'Indian' },
+      { name: 'Lotus Leaf Kitchen', cuisine: 'Chinese' },
+      { name: 'El Mariachi’s', cuisine: 'Mexican' },
+      { name: 'Yankee Kitchen', cuisine: 'American' },
+      { name: 'Athens Mezze Bar', cuisine: 'Mediterranean' },
+      { name: 'Roman Holiday Eatery', cuisine: 'Italian' },
+      { name: 'Masala Express', cuisine: 'Indian' },
+      { name: 'Wok ‘n’ Roll', cuisine: 'Chinese' },
+      { name: 'La Hacienda', cuisine: 'Mexican' },
+      { name: 'Old Glory Café', cuisine: 'American' },
+      { name: 'Levantine Flame', cuisine: 'Mediterranean' },
+      { name: 'Pompeii Ristorante', cuisine: 'Italian' },
+      { name: 'Spice Symphony', cuisine: 'Indian' },
+      { name: 'Golden Chopsticks', cuisine: 'Chinese' },
+      { name: 'Baja Breeze', cuisine: 'Mexican' },
+      { name: 'Liberty Tavern', cuisine: 'American' },
+      { name: 'The Greek Table', cuisine: 'Mediterranean' },
+      { name: 'Bella Napoli', cuisine: 'Italian' },
+      { name: 'Bombay Curry Café', cuisine: 'Indian' },
+      { name: 'Dragon Gate', cuisine: 'Chinese' },
+      { name: 'Sombrero Fiesta', cuisine: 'Mexican' },
+      { name: 'Iron Horse Grill', cuisine: 'American' },
+      { name: 'Acropolis Kitchen', cuisine: 'Mediterranean' },
+      { name: 'Siena’s Bistro', cuisine: 'Italian' },
+      { name: 'Royal Masala', cuisine: 'Indian' },
+      { name: 'Lantern House', cuisine: 'Chinese' },
+      { name: 'Viva la Salsa', cuisine: 'Mexican' },
+      { name: 'Pioneer BBQ House', cuisine: 'American' },
+      { name: 'Mediterranean Moon', cuisine: 'Mediterranean' },
+      { name: 'Trattoria Venezia', cuisine: 'Italian' },
+      { name: 'Curry Caravan', cuisine: 'Indian' },
+      { name: 'Jade Emperor Palace', cuisine: 'Chinese' },
+      { name: 'Taco Amigos', cuisine: 'Mexican' }
+    ];
+
+    // Restaurant selector elements
+    const restaurantSearch = document.getElementById('restaurantSearch');
+    const cuisineFilter = document.getElementById('cuisineFilter');
+    const restaurantSelect = document.getElementById('restaurantSelect');
+
+    function populateCuisineFilter(){
+      const cuisines = Array.from(new Set(approvedRestaurants.map(r=>r.cuisine))).sort();
+      cuisines.forEach(c=>{
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        cuisineFilter.appendChild(opt);
+      });
+    }
+
+    function renderRestaurantOptions(){
+      const term = (restaurantSearch?.value || '').toLowerCase().trim();
+      const cuisine = cuisineFilter?.value || '';
+      restaurantSelect.innerHTML = '';
+      approvedRestaurants
+        .filter(r => (!term || r.name.toLowerCase().includes(term)))
+        .filter(r => (!cuisine || r.cuisine === cuisine))
+        .forEach(r=>{
+          const opt = document.createElement('option');
+          opt.value = r.name;
+          opt.textContent = `${r.name} — ${r.cuisine}`;
+          opt.dataset.cuisine = r.cuisine;
+          restaurantSelect.appendChild(opt);
+        });
+    }
+
+    function getSelectedRestaurant(){
+      const opt = restaurantSelect?.selectedOptions?.[0];
+      if(!opt) return { name: '', cuisine: '' };
+      return { name: opt.value, cuisine: opt.dataset.cuisine || '' };
+    }
+
+    // Initialize restaurant UI
+    if(cuisineFilter && restaurantSelect){
+      populateCuisineFilter();
+      renderRestaurantOptions();
+      restaurantSearch?.addEventListener('input', renderRestaurantOptions);
+      cuisineFilter.addEventListener('change', renderRestaurantOptions);
+    }
+
     function money(n){ if(isNaN(n) || !isFinite(n)) return '—'; return n.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}); }
 
     function estimate(){
@@ -331,6 +504,8 @@
         menuPref: pref,
         menuNotes: data.get('menuNotes')||'',
         cateringType: catType,
+        restaurant: getSelectedRestaurant().name,
+        restaurantCuisine: getSelectedRestaurant().cuisine,
         budgetPer: data.get('budgetPer'),
         totalBudget: data.get('totalBudget')||'',
         rush: !!data.get('rush'),
@@ -369,11 +544,12 @@
       const base = (parseInt(obj.guests||0,10) * parseFloat(obj.budgetPer||0))||0;
       const rushFee = obj.rush ? 200 : 0;
       const estTotal = (obj.totalBudget? parseFloat(obj.totalBudget): base) + rushFee;
-      return `CATERING REQUEST\n\nCONTACT\nName: ${obj.name}\nEmail: ${obj.email}\nPhone: ${obj.phone}\nCompany: ${obj.company}\nCost Center: ${obj.costCenter}\n\nEVENT\nDate: ${obj.eventDate}\nLocation: ${obj.location}\nStart: ${obj.startTime}\nEnd: ${obj.endTime}\nGuests: ${obj.guests}\nService Style: ${obj.serviceStyle}\n\nMEALS\nTypes: ${obj.mealTypes.join(', ')}\nMenu Preference: ${obj.menuPref}\nMenu Notes: ${obj.menuNotes}\nCatering Type: ${obj.cateringType}\n\nBUDGET\nPer Person: $${Number(obj.budgetPer||0).toFixed(2)}\nTotal Budget (client): ${obj.totalBudget? `$${Number(obj.totalBudget).toFixed(2)}`:'(not specified)'}\nRush (within 48h): ${obj.rush? 'Yes (+$200)': 'No'}\n\nESTIMATE\nGuests × Per‑person: $${base.toFixed(2)}\nRush Fee: $${rushFee.toFixed(2)}\nEstimated Total: $${estTotal.toFixed(2)}\n\nNOTES\n${obj.notes || '(none)'}\n\n— Submitted via website`;
+      const restaurantLine = obj.restaurant ? `\nRestaurant: ${obj.restaurant} (${obj.restaurantCuisine || 'Cuisine n/a'})` : '';
+      return `CATERING REQUEST\n\nCONTACT\nName: ${obj.name}\nEmail: ${obj.email}\nPhone: ${obj.phone}\nCompany: ${obj.company}\nCost Center: ${obj.costCenter}\n\nEVENT\nDate: ${obj.eventDate}\nLocation: ${obj.location}\nStart: ${obj.startTime}\nEnd: ${obj.endTime}\nGuests: ${obj.guests}\nService Style: ${obj.serviceStyle}\n\nMEALS\nTypes: ${obj.mealTypes.join(', ')}\nMenu Preference: ${obj.menuPref}${restaurantLine}\nMenu Notes: ${obj.menuNotes}\nCatering Type: ${obj.cateringType}\n\nBUDGET\nPer Person: $${Number(obj.budgetPer||0).toFixed(2)}\nTotal Budget (client): ${obj.totalBudget? `$${Number(obj.totalBudget).toFixed(2)}`:'(not specified)'}\nRush (within 48h): ${obj.rush? 'Yes (+$200)': 'No'}\n\nESTIMATE\nGuests × Per‑person: $${base.toFixed(2)}\nRush Fee: $${rushFee.toFixed(2)}\nEstimated Total: $${estTotal.toFixed(2)}\n\nNOTES\n${obj.notes || '(none)'}\n\n— Submitted via website`;
     }
 
     function openModal(summary){
-      $('#  ').textContent = summary;
+      $('#previewText').textContent = summary;
       const dialog = $('#previewModal');
       if(typeof dialog.showModal === 'function') dialog.showModal(); else alert(summary);
     }
