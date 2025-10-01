@@ -94,7 +94,7 @@
             <div class="sub">Tell us the basics. We’ll confirm with a custom proposal.</div>
           </div>
         </div>
-        <div class="sub">📞 <a href="tel:+10000000000" style="color:var(--accent);text-decoration:none">(000) 000‑0000</a> · ✉️ <a href="mailto:orders@yourcatering.com" style="color:var(--accent);text-decoration:none">orders@yourcatering.com</a></div>
+        <div class="sub">📞 <a href="tel:+14088874511" style="color:var(--accent);text-decoration:none">+1 (408) 887‑4511</a> · ✉️ <a href="mailto:Jarlein.Escobar@fooda.com" style="color:var(--accent);text-decoration:none">Jarlein.Escobar@fooda.com</a></div>
       </header>
 
       <form id="cateringForm" novalidate>
@@ -139,8 +139,8 @@
               <input id="eventDate" name="eventDate" type="date" required />
             </div>
             <div>
-              <label for="location" class="required">Location / Address</label>
-              <input id="location" name="location" type="text" placeholder="Venue name, street, city" required />
+              <label for="location" class="required">Location</label>
+              <input id="location" name="location" type="text" placeholder="Building, Floor, Meeting room" required />
             </div>
           </div>
           <div class="row">
@@ -373,7 +373,7 @@
     }
 
     function openModal(summary){
-      $('#previewText').textContent = summary;
+      $('#  ').textContent = summary;
       const dialog = $('#previewModal');
       if(typeof dialog.showModal === 'function') dialog.showModal(); else alert(summary);
     }
@@ -387,7 +387,7 @@
     }
 
     function buildMailto(summary){
-      const to = 'orders@yourcatering.com'; // replace with your inbox
+      const to = 'Jarlein.Escobar@fooda.com'; // replace with your inbox
       const subject = encodeURIComponent('New Catering Request');
       const body = encodeURIComponent(summary);
       return `mailto:${to}?subject=${subject}&body=${body}`;
